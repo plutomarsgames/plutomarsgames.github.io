@@ -6,12 +6,18 @@ let roomId = "";
 let gameEnded = false;
 let isBotGame = false;
 
-// 🔑 room code
+// load rooms
+window.onload = () => {
+  document.getElementById("winner-banner").style.display = "none";
+  loadRooms();
+};
+
+// room code
 function generateRoomCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
-// create room
+// create
 async function createRoom() {
   playerName = document.getElementById("username").value;
   if (!playerName) return alert("Enter username");
@@ -31,7 +37,7 @@ async function createRoom() {
   startGame();
 }
 
-// bot mode
+// bot
 async function playWithBot() {
   playerName = document.getElementById("username").value;
   if (!playerName) return alert("Enter username");
@@ -51,17 +57,12 @@ async function playWithBot() {
   startGame();
 }
 
-// live rooms
+// rooms
 function loadRooms() {
   const list = document.getElementById("room-list");
 
   onSnapshot(collection(db, "games"), (snapshot) => {
     list.innerHTML = "";
-
-    if (snapshot.empty) {
-      list.innerHTML = "<p>No rooms available</p>";
-      return;
-    }
 
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
@@ -69,7 +70,7 @@ function loadRooms() {
       if (!data.players.player2) {
         const div = document.createElement("div");
         div.className = "room-item";
-        div.innerText = `Room: ${docSnap.id} | Host: ${data.players.player1}`;
+        div.innerText = `Room: ${docSnap.id}`;
         div.onclick = () => joinRoom(docSnap.id);
         list.appendChild(div);
       }
@@ -112,10 +113,8 @@ function initGame() {
       await setDoc(ref, {
         players: { ...data.players, player2: playerName }
       }, { merge: true });
-
     } else if (data.players.player1 === playerName) {
       playerRole = "player1";
-
     } else if (data.players.player2 === playerName) {
       playerRole = "player2";
     }
@@ -140,30 +139,15 @@ function renderGame(data) {
   grid.innerHTML = "";
 
   if (!data.players.player2 && !isBotGame) {
-    document.getElementById("player").innerText =
-      `Room: ${roomId} | Waiting for player...`;
+    document.getElementById("player").innerText = "Waiting for player...";
     return;
   }
-
-  let opponent =
-    playerRole === "player1"
-      ? data.players.player2
-      : data.players.player1;
-
-  let turnText =
-    data.turn === playerRole ? "🟢 Your Turn" : "🔴 Opponent Turn";
-
-  document.getElementById("player").innerText =
-    `Room: ${roomId}\n${playerName} vs ${opponent}\n${turnText}`;
 
   for (let i = 0; i < 25; i++) {
     let box = document.createElement("div");
     box.className = "box";
 
-    if (data.boxes[i]) {
-      box.classList.add("open");
-      box.innerHTML = data.boxes[i];
-    }
+    if (data.boxes[i]) box.innerHTML = data.boxes[i];
 
     box.onclick = () => openBox(i, data);
     grid.appendChild(box);
@@ -181,41 +165,19 @@ function renderGame(data) {
     setDoc(doc(db, "games", roomId), { winner }, { merge: true });
   }
 
-  // 🎉 winner UI
-  if (data.winner && !gameEnded && data.boxes.every(b => b !== null)) {
+  if (data.winner && !gameEnded) {
     gameEnded = true;
 
-    const banner = document.getElementById("winner-banner");
-    const text = document.getElementById("winner-text");
-
-    banner.style.display = "flex";
-
-    if (data.winner === "Tie") {
-      text.innerText = "🤝 It's a Tie!";
-    } else if (data.winner === playerName) {
-      text.innerText = "🏆 You Win!";
-    } else {
-      text.innerText = `💀 ${data.winner} Wins!`;
-    }
-  }
-
-  // bot
-  if (isBotGame && data.turn === "player2" && !gameEnded) {
-    botMove(data);
+    document.getElementById("winner-banner").style.display = "flex";
+    document.getElementById("winner-text").innerText =
+      data.winner === playerName ? "🏆 You Win!" : "💀 You Lose!";
   }
 }
 
 // click
 async function openBox(i, data) {
   if (gameEnded) return;
-
-  if (!data.players.player2 && !isBotGame) {
-    alert("Waiting for opponent");
-    return;
-  }
-
-  if (data.turn !== playerRole) return alert("Not your turn");
-  if (data.boxes[i]) return;
+  if (data.turn !== playerRole) return;
 
   let newBoxes = [...data.boxes];
   let scores = { ...data.scores };
@@ -232,35 +194,12 @@ async function openBox(i, data) {
     scores,
     turn: next
   }, { merge: true });
-
-  document.getElementById("score").innerText = scores[playerRole];
 }
 
 // bot
 function botMove(data) {
-  setTimeout(async () => {
-    let empty = data.boxes.map((b, i) => b ? null : i).filter(i => i !== null);
-    let i = empty[Math.floor(Math.random() * empty.length)];
-
-    let newBoxes = [...data.boxes];
-    let scores = { ...data.scores };
-
-    if (data.coins.includes(i)) {
-      newBoxes[i] = "🪙";
-      scores.player2++;
-    } else newBoxes[i] = "❌";
-
-    await setDoc(doc(db, "games", roomId), {
-      boxes: newBoxes,
-      scores,
-      turn: "player1"
-    }, { merge: true });
-
-  }, 800);
+  setTimeout(() => {}, 500);
 }
-
-// load
-window.onload = loadRooms;
 
 // expose
 window.createRoom = createRoom;
