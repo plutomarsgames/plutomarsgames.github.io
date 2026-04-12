@@ -141,7 +141,17 @@ function renderGame(data) {
       ? data.players.player2
       : data.players.player1;
 
-  status.innerText = `${playerName} vs ${opponent} | Turn: ${turnName}`;
+  if (data.turn === playerRole) {
+  status.innerHTML = `
+    <b>${playerName}</b> vs <b>${opponent}</b><br>
+    🟢 Your Turn
+  `;
+} else {
+  status.innerHTML = `
+    <b>${playerName}</b> vs <b>${opponent}</b><br>
+    🔴 ${opponent}'s Turn
+  `;
+}
 
   document.getElementById("score").innerText =
     data.scores[playerRole] || 0;
