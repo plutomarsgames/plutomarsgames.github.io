@@ -6,27 +6,21 @@ let roomId = "";
 let gameEnded = false;
 let isBotGame = false;
 
+// debug
+console.log("APP LOADED");
+
 // load rooms
-window.onload = () => {
-  document.getElementById("winner-banner").style.display = "none";
-  loadRooms();
-};
+window.onload = loadRooms;
 
-// room code
-function generateRoomCode() {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
-}
-
-// create
+// create room
 async function createRoom() {
   playerName = document.getElementById("username").value;
   if (!playerName) return alert("Enter username");
 
-  isBotGame = false;
-  roomId = generateRoomCode();
+  roomId = Math.random().toString(36).substring(2, 7);
 
   await setDoc(doc(db, "games", roomId), {
-    boxes: Array(25).fill(null),
+    boxes: Array(25).fill(""),
     coins: generateCoins(),
     players: { player1: playerName },
     turn: "player1",
@@ -43,10 +37,10 @@ async function playWithBot() {
   if (!playerName) return alert("Enter username");
 
   isBotGame = true;
-  roomId = generateRoomCode();
+  roomId = Math.random().toString(36).substring(2, 7);
 
   await setDoc(doc(db, "games", roomId), {
-    boxes: Array(25).fill(null),
+    boxes: Array(25).fill(""),
     coins: generateCoins(),
     players: { player1: playerName, player2: "BLACKMITH" },
     turn: "player1",
@@ -70,7 +64,7 @@ function loadRooms() {
       if (!data.players.player2) {
         const div = document.createElement("div");
         div.className = "room-item";
-        div.innerText = `Room: ${docSnap.id}`;
+        div.innerText = "Room: " + docSnap.id;
         div.onclick = () => joinRoom(docSnap.id);
         list.appendChild(div);
       }
@@ -83,7 +77,6 @@ function joinRoom(id) {
   playerName = document.getElementById("username").value;
   if (!playerName) return alert("Enter username");
 
-  isBotGame = false;
   roomId = id;
   startGame();
 }
@@ -111,8 +104,9 @@ function initGame() {
       playerRole = "player2";
 
       await setDoc(ref, {
+        ...data,
         players: { ...data.players, player2: playerName }
-      }, { merge: true });
+      });
     } else if (data.players.player1 === playerName) {
       playerRole = "player1";
     } else if (data.players.player2 === playerName) {
@@ -139,22 +133,19 @@ function renderGame(data) {
   grid.innerHTML = "";
 
   if (!data.players.player2 && !isBotGame) {
-    document.getElementById("player").innerText = "Waiting for player...";
+    document.getElementById("player").innerText = "Waiting...";
     return;
   }
 
   for (let i = 0; i < 25; i++) {
     let box = document.createElement("div");
     box.className = "box";
-
-    if (data.boxes[i]) box.innerHTML = data.boxes[i];
-
+    box.innerHTML = data.boxes[i];
     box.onclick = () => openBox(i, data);
     grid.appendChild(box);
   }
 
-  // winner
-  if (!data.boxes.includes(null) && !data.winner) {
+  if (!data.boxes.includes("") && !data.winner) {
     let p1 = data.scores.player1;
     let p2 = data.scores.player2;
 
@@ -162,12 +153,11 @@ function renderGame(data) {
       p1 > p2 ? data.players.player1 :
       p2 > p1 ? data.players.player2 : "Tie";
 
-    setDoc(doc(db, "games", roomId), { winner }, { merge: true });
+    setDoc(doc(db, "games", roomId), { ...data, winner });
   }
 
   if (data.winner && !gameEnded) {
     gameEnded = true;
-
     document.getElementById("winner-banner").style.display = "flex";
     document.getElementById("winner-text").innerText =
       data.winner === playerName ? "🏆 You Win!" : "💀 You Lose!";
@@ -179,26 +169,24 @@ async function openBox(i, data) {
   if (gameEnded) return;
   if (data.turn !== playerRole) return;
 
-  let newBoxes = [...data.boxes];
+  let boxes = [...data.boxes];
   let scores = { ...data.scores };
 
   if (data.coins.includes(i)) {
-    newBoxes[i] = "🪙";
+    boxes[i] = "🪙";
     scores[playerRole]++;
-  } else newBoxes[i] = "❌";
+  } else {
+    boxes[i] = "❌";
+  }
 
   let next = playerRole === "player1" ? "player2" : "player1";
 
   await setDoc(doc(db, "games", roomId), {
-    boxes: newBoxes,
+    ...data,
+    boxes,
     scores,
     turn: next
-  }, { merge: true });
-}
-
-// bot
-function botMove(data) {
-  setTimeout(() => {}, 500);
+  });
 }
 
 // expose
