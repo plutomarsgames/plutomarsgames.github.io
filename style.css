@@ -22,7 +22,6 @@ button {
 
 .hidden { display: none !important; }
 
-/* grid */
 #grid {
   display: grid;
   grid-template-columns: repeat(5, 70px);
@@ -41,23 +40,24 @@ button {
   justify-content: center;
   font-size: 22px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, background 0.3s;
 }
 
+/* click animation */
 .box:active {
-  transform: scale(0.9);
+  transform: scale(0.85);
 }
 
+/* reveal animation */
 .box.open {
-  animation: pop 0.3s ease;
+  animation: reveal 0.3s ease;
 }
 
-@keyframes pop {
-  from { transform: scale(0.5); }
-  to { transform: scale(1); }
+@keyframes reveal {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
-/* rooms */
 .room-item {
   background: #1e293b;
   margin: 10px auto;
