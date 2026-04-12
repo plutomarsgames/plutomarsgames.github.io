@@ -1,32 +1,63 @@
 body {
+  margin: 0;
   font-family: Arial;
-  text-align: center;
-  background: #0f172a;
+  background: #020617;
   color: white;
+  text-align: center;
 }
 
-input, button {
-  padding: 10px;
+h1 { color: gold; }
+
+input {
+  padding: 12px;
   margin: 10px;
+  width: 220px;
+  border-radius: 8px;
+  border: none;
+}
+
+button {
+  padding: 12px 20px;
+  background: gold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 #grid {
   display: grid;
-  grid-template-columns: repeat(5, 60px);
+  grid-template-columns: repeat(5, 70px);
   gap: 10px;
   justify-content: center;
+  margin-top: 20px;
 }
 
 .box {
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   background: #1e293b;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  font-size: 22px;
+}
+
+.room-item {
+  background: #1e293b;
+  margin: 10px auto;
+  padding: 10px;
+  width: 260px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.room-item:hover {
+  background: gold;
+  color: black;
 }
