@@ -1,73 +1,126 @@
 body {
   margin: 0;
-  font-family: Arial;
-  background: #020617;
+  font-family: 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at top, #0f172a, #020617);
   color: white;
+}
+
+/* center container */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* glass card */
+.card {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  padding: 25px;
+  border-radius: 20px;
+  width: 320px;
   text-align: center;
+  box-shadow: 0 0 25px rgba(0,0,0,0.5);
 }
 
-h1 { color: gold; }
+/* heading */
+h1 {
+  color: gold;
+  margin-bottom: 15px;
+}
 
-input, button {
+/* input */
+input {
+  width: 90%;
   padding: 12px;
-  margin: 10px;
-  border-radius: 8px;
+  margin: 10px 0;
+  border-radius: 10px;
   border: none;
+  outline: none;
 }
 
+/* buttons */
 button {
-  background: gold;
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, gold, orange);
+  color: black;
+  font-weight: bold;
   cursor: pointer;
+  transition: 0.2s;
 }
 
-.hidden { display: none !important; }
+button:hover {
+  transform: scale(1.05);
+}
 
+/* divider */
+.divider {
+  height: 1px;
+  background: rgba(255,255,255,0.2);
+  margin: 15px 0;
+}
+
+/* grid */
 #grid {
   display: grid;
-  grid-template-columns: repeat(5, 70px);
+  grid-template-columns: repeat(5, 60px);
   gap: 10px;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 15px;
 }
 
+/* boxes */
 .box {
-  width: 70px;
-  height: 70px;
+  width: 60px;
+  height: 60px;
   background: #1e293b;
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 22px;
   cursor: pointer;
-  transition: transform 0.2s, background 0.3s;
+  transition: 0.2s;
 }
 
-/* click animation */
+.box:hover {
+  transform: scale(1.1);
+}
+
 .box:active {
-  transform: scale(0.85);
+  transform: scale(0.9);
 }
 
-/* reveal animation */
 .box.open {
-  animation: reveal 0.3s ease;
+  animation: pop 0.3s ease;
 }
 
-@keyframes reveal {
+/* animation */
+@keyframes pop {
   from { transform: scale(0.5); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
+/* rooms */
 .room-item {
-  background: #1e293b;
-  margin: 10px auto;
+  background: rgba(255,255,255,0.05);
+  margin: 8px 0;
   padding: 10px;
-  width: 260px;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
 .room-item:hover {
   background: gold;
   color: black;
+}
+
+/* hidden */
+.hidden {
+  display: none !important;
 }
