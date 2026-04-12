@@ -7,24 +7,31 @@
 </head>
 <body>
 
-<div id="start-screen">
-  <h1>🚀 PLUTOMARS GAMES</h1>
+<div class="container">
 
-  <input type="text" id="username" placeholder="Enter username"><br>
-  <button onclick="createRoom()">Create Room</button>
+  <!-- HOME -->
+  <div id="start-screen" class="card">
+    <h1>🚀 PLUTOMARS</h1>
 
-  <h3>Available Rooms</h3>
-  <div id="room-list"></div>
+    <input type="text" id="username" placeholder="Enter username">
 
-  <br><hr><br>
+    <button onclick="createRoom()">🎮 Create Room</button>
 
-  <button onclick="playWithBot()">Play with BLACKMITH 🤖</button>
-</div>
+    <h3>Available Rooms</h3>
+    <div id="room-list"></div>
 
-<div id="game-screen" class="hidden">
-  <h2 id="status"></h2>
-  <h3>Coins: <span id="score">0</span></h3>
-  <div id="grid"></div>
+    <div class="divider"></div>
+
+    <button onclick="playWithBot()">🤖 Play with BLACKMITH</button>
+  </div>
+
+  <!-- GAME -->
+  <div id="game-screen" class="card hidden">
+    <h2 id="status"></h2>
+    <h3>🪙 Coins: <span id="score">0</span></h3>
+    <div id="grid"></div>
+  </div>
+
 </div>
 
 <audio id="coinSound" src="https://assets.mixkit.co/sfx/preview/mixkit-coins-handling-1939.mp3"></audio>
