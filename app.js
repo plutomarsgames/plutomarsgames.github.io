@@ -2,7 +2,6 @@ import { db, doc, setDoc, onSnapshot, getDoc } from "./firebase.js";
 
 let playerName = "";
 let playerRole = "";
-let myTurn = false;
 let roomId = "";
 let gameEnded = false;
 
@@ -22,22 +21,15 @@ function createRoom() {
   startGame(true);
 }
 
-// 🔗 Join Room (FIXED)
+// 🔗 Join Room
 async function joinRoom() {
   playerName = document.getElementById("username").value;
   roomId = document.getElementById("roomInput").value.toUpperCase();
 
-  if (!playerName || !roomId) {
-    alert("Enter username and room code");
-    return;
-  }
+  if (!playerName || !roomId) return alert("Enter details");
 
-  const docSnap = await getDoc(doc(db, "games", roomId));
-
-  if (!docSnap.exists()) {
-    alert("❌ Room not found");
-    return;
-  }
+  const snap = await getDoc(doc(db, "games", roomId));
+  if (!snap.exists()) return alert("❌ Room not found");
 
   startGame(false);
 }
@@ -55,53 +47,62 @@ function playWithBot() {
     players: { player1: playerName, player2: "BLACKMITH" },
     turn: "player1",
     scores: { player1: 0, player2: 0 },
-    winner: "",
-    rematch: {}
+    winner: ""
   });
 
   startGame(false);
 }
 
-// ▶ Start
+// ▶ START
 function startGame(isNew) {
   document.getElementById("start-screen").classList.add("hidden");
   document.getElementById("game-screen").classList.remove("hidden");
 
+  document.getElementById("winner-banner").classList.add("hidden");
+  gameEnded = false;
+
   initGame(isNew);
 }
 
-// 🔄 Init
+// 🔄 INIT
 async function initGame(isNew) {
-  const gameRef = doc(db, "games", roomId);
+  const ref = doc(db, "games", roomId);
 
   if (isNew) {
-    await setDoc(gameRef, {
+    await setDoc(ref, {
       boxes: Array(25).fill(null),
       coins: generateCoins(),
       players: {},
       turn: "player1",
       scores: { player1: 0, player2: 0 },
-      winner: "",
-      rematch: {}
+      winner: ""
     });
   }
 
-  onSnapshot(gameRef, async (snap) => {
+  onSnapshot(ref, async (snap) => {
     let data = snap.data();
+    if (!data) return;
+
+    // FIX: reset old game automatically
+    if (data.winner) {
+      await setDoc(ref, {
+        boxes: Array(25).fill(null),
+        coins: generateCoins(),
+        players: {},
+        turn: "player1",
+        scores: { player1: 0, player2: 0 },
+        winner: ""
+      });
+      return;
+    }
 
     // assign players
     if (!data.players.player1) {
       playerRole = "player1";
-      await setDoc(gameRef, {
-        players: { ...data.players, player1: playerName }
-      }, { merge: true });
-
+      await setDoc(ref, { players: { ...data.players, player1: playerName } }, { merge: true });
     } else if (!data.players.player2 && data.players.player1 !== playerName) {
       playerRole = "player2";
-      await setDoc(gameRef, {
-        players: { ...data.players, player2: playerName }
-      }, { merge: true });
-
+      await setDoc(ref, { players: { ...data.players, player2: playerName } }, { merge: true });
     } else {
       if (data.players.player1 === playerName) playerRole = "player1";
       if (data.players.player2 === playerName) playerRole = "player2";
@@ -121,7 +122,7 @@ function generateCoins() {
   return arr;
 }
 
-// 🎮 Render
+// 🎮 RENDER
 function renderGame(data) {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
@@ -132,13 +133,11 @@ function renderGame(data) {
       : data.players.player1;
 
   document.getElementById("player").innerText =
-    `Room: ${roomId} | You: ${playerName} vs ${opponent}`;
-
-  myTurn = data.turn === playerRole;
+    `Room: ${roomId} | ${playerName} vs ${opponent}`;
 
   for (let i = 0; i < 25; i++) {
     let box = document.createElement("div");
-    box.classList.add("box");
+    box.className = "box";
 
     if (data.boxes[i]) {
       box.classList.add("open");
@@ -146,24 +145,21 @@ function renderGame(data) {
     }
 
     box.onclick = () => openBox(i, data);
-
     grid.appendChild(box);
   }
 
-  // 🏆 winner
+  // winner
   if (!data.boxes.includes(null) && !data.winner) {
     let p1 = data.scores.player1;
     let p2 = data.scores.player2;
 
-    let winner = "Tie";
-
-    if (p1 > p2) winner = data.players.player1;
-    else if (p2 > p1) winner = data.players.player2;
+    let winner = p1 > p2 ? data.players.player1 :
+                 p2 > p1 ? data.players.player2 : "Tie";
 
     setDoc(doc(db, "games", roomId), { winner }, { merge: true });
   }
 
-  // 🎉 show banner
+  // show banner
   if (data.winner && !gameEnded) {
     gameEnded = true;
 
@@ -172,92 +168,70 @@ function renderGame(data) {
       data.winner === "Tie" ? "🤝 It's a Tie!" : "🏆 " + data.winner + " Wins!";
   }
 
-  // 🔁 rematch
-  if (data.rematch?.player1 && data.rematch?.player2) {
-    resetGame();
-  }
-
-  // 🤖 bot
+  // bot
   if (data.players.player2 === "BLACKMITH" && data.turn === "player2") {
     botMove(data);
   }
 }
 
-// 🎯 Click
-async function openBox(index, data) {
+// 🎯 CLICK
+async function openBox(i, data) {
   if (gameEnded) return;
-
-  if (!myTurn || data.turn !== playerRole) {
-    alert("Not your turn");
-    return;
-  }
-
-  if (data.boxes[index]) return;
+  if (data.boxes[i]) return;
+  if (data.turn !== playerRole) return alert("Wait turn");
 
   let newBoxes = [...data.boxes];
-  let newScores = { ...data.scores };
+  let scores = { ...data.scores };
 
-  if (data.coins.includes(index)) {
-    newBoxes[index] = "🪙";
-    newScores[playerRole]++;
-  } else {
-    newBoxes[index] = "❌";
-  }
+  if (data.coins.includes(i)) {
+    newBoxes[i] = "🪙";
+    scores[playerRole]++;
+  } else newBoxes[i] = "❌";
 
-  let nextTurn = playerRole === "player1" ? "player2" : "player1";
+  let next = playerRole === "player1" ? "player2" : "player1";
 
   await setDoc(doc(db, "games", roomId), {
     boxes: newBoxes,
-    scores: newScores,
-    turn: nextTurn
+    scores,
+    turn: next
   }, { merge: true });
 
-  document.getElementById("score").innerText = newScores[playerRole];
+  document.getElementById("score").innerText = scores[playerRole];
 }
 
 // 🤖 BOT
 function botMove(data) {
   setTimeout(async () => {
     let empty = data.boxes.map((b, i) => b ? null : i).filter(i => i !== null);
-
-    let randomIndex = empty[Math.floor(Math.random() * empty.length)];
+    let i = empty[Math.floor(Math.random() * empty.length)];
 
     let newBoxes = [...data.boxes];
-    let newScores = { ...data.scores };
+    let scores = { ...data.scores };
 
-    if (data.coins.includes(randomIndex)) {
-      newBoxes[randomIndex] = "🪙";
-      newScores.player2++;
-    } else {
-      newBoxes[randomIndex] = "❌";
-    }
+    if (data.coins.includes(i)) {
+      newBoxes[i] = "🪙";
+      scores.player2++;
+    } else newBoxes[i] = "❌";
 
     await setDoc(doc(db, "games", roomId), {
       boxes: newBoxes,
-      scores: newScores,
+      scores,
       turn: "player1"
     }, { merge: true });
 
   }, 800);
 }
 
-// 🔁 Rematch
-async function requestRematch() {
-  await setDoc(doc(db, "games", roomId), {
-    rematch: { [playerRole]: true }
-  }, { merge: true });
-}
-
-// 🔄 Reset
+// 🔁 RESET
 async function resetGame() {
   await setDoc(doc(db, "games", roomId), {
     boxes: Array(25).fill(null),
     coins: generateCoins(),
+    players: {},
     turn: "player1",
     scores: { player1: 0, player2: 0 },
-    winner: "",
-    rematch: {}
-  }, { merge: true });
+    winner: ""
+  });
 
   location.reload();
 }
@@ -266,4 +240,4 @@ async function resetGame() {
 window.createRoom = createRoom;
 window.joinRoom = joinRoom;
 window.playWithBot = playWithBot;
-window.requestRematch = requestRematch;
+window.resetGame = resetGame;
