@@ -1,4 +1,4 @@
-import { db, doc, setDoc, onSnapshot, getDocs, collection } from "./firebase.js";
+import { db, doc, setDoc, onSnapshot, collection } from "./firebase.js";
 
 let playerName = "";
 let playerRole = "";
@@ -32,7 +32,7 @@ async function createRoom() {
   startGame();
 }
 
-// 🤖 play with bot
+// 🤖 bot mode
 async function playWithBot() {
   playerName = document.getElementById("username").value;
   if (!playerName) return alert("Enter username");
@@ -56,24 +56,29 @@ async function playWithBot() {
   startGame();
 }
 
-// 🔄 load rooms
-async function loadRooms() {
-  const querySnapshot = await getDocs(collection(db, "games"));
+// 🔄 LIVE ROOM LIST
+function loadRooms() {
   const list = document.getElementById("room-list");
-  list.innerHTML = "";
 
-  querySnapshot.forEach((docSnap) => {
-    const data = docSnap.data();
+  onSnapshot(collection(db, "games"), (snapshot) => {
+    list.innerHTML = "";
 
-    if (!data.players.player2) {
-      const div = document.createElement("div");
-      div.className = "room-item";
-      div.innerText = `Room: ${docSnap.id} | Host: ${data.players.player1}`;
-
-      div.onclick = () => joinRoom(docSnap.id);
-
-      list.appendChild(div);
+    if (snapshot.empty) {
+      list.innerHTML = "<p>No rooms available</p>";
+      return;
     }
+
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+
+      if (!data.players.player2) {
+        const div = document.createElement("div");
+        div.className = "room-item";
+        div.innerText = `Room: ${docSnap.id} | Host: ${data.players.player1}`;
+        div.onclick = () => joinRoom(docSnap.id);
+        list.appendChild(div);
+      }
+    });
   });
 }
 
@@ -189,7 +194,7 @@ function renderGame(data) {
         : "🏆 " + data.winner + " Wins!";
   }
 
-  // 🤖 bot only in bot mode
+  // 🤖 bot
   if (isBotGame && data.turn === "player2" && !gameEnded) {
     botMove(data);
   }
@@ -249,7 +254,7 @@ function botMove(data) {
   }, 800);
 }
 
-// load rooms
+// start room list
 window.onload = loadRooms;
 
 // expose
