@@ -8,20 +8,10 @@ let gameEnded = false;
 
 window.onload = loadRooms;
 
-// username
-function getName() {
-  let name = document.getElementById("username").value;
-  if (!name) {
-    alert("Enter username");
-    return null;
-  }
-  return name;
-}
-
 // create room
 async function createRoom() {
-  playerName = getName();
-  if (!playerName) return;
+  playerName = document.getElementById("username").value;
+  if (!playerName) return alert("Enter username");
 
   isBotGame = false;
 
@@ -41,8 +31,8 @@ async function createRoom() {
 
 // bot mode
 async function playWithBot() {
-  playerName = getName();
-  if (!playerName) return;
+  playerName = document.getElementById("username").value;
+  if (!playerName) return alert("Enter username");
 
   isBotGame = true;
 
@@ -53,7 +43,7 @@ async function playWithBot() {
     coins: generateCoins(),
     players: {
       player1: playerName,
-      player2: "BOT"
+      player2: "BLACKMITH"
     },
     turn: "player1",
     scores: { player1: 0, player2: 0 },
@@ -67,14 +57,15 @@ async function playWithBot() {
 function loadRooms() {
   const list = document.getElementById("room-list");
 
-  onSnapshot(collection(db, "games"), (snap) => {
+  onSnapshot(collection(db, "games"), (snapshot) => {
     list.innerHTML = "";
 
-    snap.forEach((docSnap) => {
+    snapshot.forEach((docSnap) => {
       const data = docSnap.data();
 
       if (!data.players.player2) {
-        let div = document.createElement("div");
+        const div = document.createElement("div");
+        div.className = "room-item";
         div.innerText = "Room: " + docSnap.id;
         div.onclick = () => joinRoom(docSnap.id);
         list.appendChild(div);
@@ -85,8 +76,8 @@ function loadRooms() {
 
 // join
 function joinRoom(id) {
-  playerName = getName();
-  if (!playerName) return;
+  playerName = document.getElementById("username").value;
+  if (!playerName) return alert("Enter username");
 
   isBotGame = false;
   roomId = id;
@@ -105,14 +96,16 @@ function startGame() {
 
 // init
 function initGame() {
-  onSnapshot(doc(db, "games", roomId), async (snap) => {
-    let data = snap.data();
+  const ref = doc(db, "games", roomId);
+
+  onSnapshot(ref, async (snap) => {
+    const data = snap.data();
     if (!data) return;
 
     if (!data.players.player2 && !isBotGame && data.players.player1 !== playerName) {
       playerRole = "player2";
 
-      await setDoc(doc(db, "games", roomId), {
+      await setDoc(ref, {
         ...data,
         players: { ...data.players, player2: playerName }
       });
@@ -149,6 +142,7 @@ function renderGame(data) {
       : data.players.player1;
 
   status.innerText = `${playerName} vs ${opponent} | Turn: ${turnName}`;
+
   document.getElementById("score").innerText =
     data.scores[playerRole] || 0;
 
@@ -166,19 +160,22 @@ function renderGame(data) {
 
   // winner
   if (!data.boxes.includes("") && !data.winner) {
-    let w =
+    let winner =
       data.scores.player1 > data.scores.player2
         ? data.players.player1
         : data.scores.player2 > data.scores.player1
         ? data.players.player2
         : "Tie";
 
-    setDoc(doc(db, "games", roomId), { ...data, winner: w });
+    setDoc(doc(db, "games", roomId), { ...data, winner });
   }
 
   if (data.winner && !gameEnded) {
     gameEnded = true;
-    status.innerText = "Winner: " + data.winner;
+    status.innerText =
+      data.winner === "Tie"
+        ? "Match Tie 🤝"
+        : "Winner: " + data.winner;
 
     setTimeout(() => location.reload(), 3000);
   }
