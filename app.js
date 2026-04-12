@@ -3,26 +3,32 @@ import { db, doc, setDoc, onSnapshot, collection } from "./firebase.js";
 let playerName = "";
 let playerRole = "";
 let roomId = "";
-let isBotGame = false;
 let gameEnded = false;
+let isBotGame = false;
 
-window.onload = loadRooms;
+// loading screen
+window.onload = () => {
+  setTimeout(() => {
+    document.getElementById("loading-screen").style.display = "none";
+    document.getElementById("main-app").classList.remove("hidden");
+    document.getElementById("bgMusic").play();
+  }, 1500);
 
-// create room
+  loadRooms();
+};
+
+// create
 async function createRoom() {
   playerName = username.value;
-  if (!playerName) return alert("Enter username");
+  roomId = Math.random().toString(36).substring(2,7);
 
-  isBotGame = false;
-  roomId = Math.random().toString(36).substring(2, 7);
-
-  await setDoc(doc(db, "games", roomId), {
-    boxes: Array(25).fill(""),
-    coins: generateCoins(),
-    players: { player1: playerName },
-    turn: "player1",
-    scores: { player1: 0, player2: 0 },
-    winner: ""
+  await setDoc(doc(db,"games",roomId),{
+    boxes:Array(25).fill(""),
+    coins:generateCoins(),
+    players:{player1:playerName},
+    turn:"player1",
+    scores:{player1:0,player2:0},
+    winner:""
   });
 
   startGame();
@@ -31,37 +37,32 @@ async function createRoom() {
 // bot
 async function playWithBot() {
   playerName = username.value;
-  if (!playerName) return alert("Enter username");
-
   isBotGame = true;
-  roomId = Math.random().toString(36).substring(2, 7);
+  roomId = Math.random().toString(36).substring(2,7);
 
-  await setDoc(doc(db, "games", roomId), {
-    boxes: Array(25).fill(""),
-    coins: generateCoins(),
-    players: { player1: playerName, player2: "BLACKMITH" },
-    turn: "player1",
-    scores: { player1: 0, player2: 0 },
-    winner: ""
+  await setDoc(doc(db,"games",roomId),{
+    boxes:Array(25).fill(""),
+    coins:generateCoins(),
+    players:{player1:playerName,player2:"BLACKMITH"},
+    turn:"player1",
+    scores:{player1:0,player2:0},
+    winner:""
   });
 
   startGame();
 }
 
-// load rooms
-function loadRooms() {
-  const list = document.getElementById("room-list");
-
-  onSnapshot(collection(db, "games"), (snapshot) => {
-    list.innerHTML = "";
-
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      if (!data.players.player2) {
-        const div = document.createElement("div");
-        div.className = "room-item";
-        div.innerText = "Room: " + docSnap.id;
-        div.onclick = () => joinRoom(docSnap.id);
+// rooms
+function loadRooms(){
+  onSnapshot(collection(db,"games"),(snap)=>{
+    const list=document.getElementById("room-list");
+    list.innerHTML="";
+    snap.forEach(d=>{
+      const data=d.data();
+      if(!data.players.player2){
+        let div=document.createElement("div");
+        div.innerText="Room "+d.id;
+        div.onclick=()=>joinRoom(d.id);
         list.appendChild(div);
       }
     });
@@ -69,177 +70,132 @@ function loadRooms() {
 }
 
 // join
-function joinRoom(id) {
-  playerName = username.value;
-  roomId = id;
-  isBotGame = false;
+function joinRoom(id){
+  playerName=username.value;
+  roomId=id;
   startGame();
 }
 
 // start
-function startGame() {
-  document.getElementById("start-screen").classList.add("hidden");
-  document.getElementById("game-screen").classList.remove("hidden");
-
-  gameEnded = false;
+function startGame(){
+  start-screen.classList.add("hidden");
+  game-screen.classList.remove("hidden");
   initGame();
 }
 
 // init
-function initGame() {
-  const ref = doc(db, "games", roomId);
+function initGame(){
+  onSnapshot(doc(db,"games",roomId),(snap)=>{
+    let data=snap.data();
+    if(!data)return;
 
-  onSnapshot(ref, async (snap) => {
-    const data = snap.data();
-    if (!data) return;
-
-    if (!data.players.player2 && data.players.player1 !== playerName && !isBotGame) {
-      playerRole = "player2";
-      await setDoc(ref, {
+    if(!data.players.player2 && data.players.player1!==playerName){
+      playerRole="player2";
+      setDoc(doc(db,"games",roomId),{
         ...data,
-        players: { ...data.players, player2: playerName }
+        players:{...data.players,player2:playerName}
       });
       return;
     }
 
-    if (data.players.player1 === playerName) playerRole = "player1";
-    if (data.players.player2 === playerName) playerRole = "player2";
+    if(data.players.player1===playerName)playerRole="player1";
+    if(data.players.player2===playerName)playerRole="player2";
 
     renderGame(data);
   });
 }
 
-// coins
-function generateCoins() {
-  let arr = [];
-  while (arr.length < 8) {
-    let r = Math.floor(Math.random() * 25);
-    if (!arr.includes(r)) arr.push(r);
-  }
-  return arr;
-}
-
 // render
-function renderGame(data) {
-  const grid = document.getElementById("grid");
-  const status = document.getElementById("status");
+function renderGame(data){
+  const grid=document.getElementById("grid");
+  grid.innerHTML="";
 
-  grid.innerHTML = "";
+  for(let i=0;i<25;i++){
+    let box=document.createElement("div");
+    box.className="box";
 
-  if (!data.players.player2 && !isBotGame) {
-    status.innerText = "Waiting for player...";
-    return;
-  }
-
-  const turnName =
-    data.turn === "player1"
-      ? data.players.player1
-      : data.players.player2;
-
-  const opponent =
-    playerRole === "player1"
-      ? data.players.player2
-      : data.players.player1;
-
-  status.innerText = `${playerName} vs ${opponent} | Turn: ${turnName}`;
-  document.getElementById("score").innerText =
-    data.scores[playerRole] || 0;
-
-  for (let i = 0; i < 25; i++) {
-    let box = document.createElement("div");
-    box.className = "box";
-
-    if (data.boxes[i]) {
-      box.innerHTML = data.boxes[i];
+    if(data.boxes[i]){
+      box.innerHTML=data.boxes[i];
       box.classList.add("open");
     }
 
-    box.onclick = () => openBox(i, data);
+    box.onclick=()=>openBox(i,data,box);
     grid.appendChild(box);
   }
 
   // winner
-  if (!data.boxes.includes("") && !data.winner) {
-    let winner =
-      data.scores.player1 > data.scores.player2
-        ? data.players.player1
-        : data.scores.player2 > data.scores.player1
-        ? data.players.player2
-        : "Tie";
+  if(!data.boxes.includes("") && !data.winner){
+    let w=data.scores.player1>data.scores.player2
+      ?data.players.player1
+      :data.players.player2;
 
-    setDoc(doc(db, "games", roomId), { ...data, winner });
+    setDoc(doc(db,"games",roomId),{...data,winner:w});
   }
 
-  if (data.winner && !gameEnded) {
-    gameEnded = true;
-    status.innerText = "Winner: " + data.winner;
-
-    setTimeout(() => {
-      location.reload();
-    }, 3000);
+  if(data.winner && !gameEnded){
+    gameEnded=true;
+    showWin(data.winner);
   }
+}
 
-  // bot
-  if (isBotGame && data.turn === "player2" && !gameEnded) {
-    setTimeout(() => botMove(data), 800);
-  }
+// coin animation
+function showCoinAnimation(box){
+  let coin=document.createElement("div");
+  coin.className="coin";
+  coin.innerText="🪙";
+
+  let rect=box.getBoundingClientRect();
+  coin.style.left=rect.left+"px";
+  coin.style.top=rect.top+"px";
+
+  document.body.appendChild(coin);
+
+  setTimeout(()=>coin.remove(),800);
 }
 
 // click
-async function openBox(i, data) {
-  if (gameEnded) return;
-  if (data.turn !== playerRole) return;
-  if (data.boxes[i]) return;
+async function openBox(i,data,box){
+  if(data.turn!==playerRole || data.boxes[i])return;
 
-  let boxes = [...data.boxes];
-  let scores = { ...data.scores };
+  let boxes=[...data.boxes];
+  let scores={...data.scores};
 
-  if (data.coins.includes(i)) {
-    boxes[i] = "🪙";
+  if(data.coins.includes(i)){
+    boxes[i]="🪙";
     scores[playerRole]++;
     coinSound.play();
-  } else {
-    boxes[i] = "❌";
-    clickSound.play();
+    showCoinAnimation(box); // 💎 animation
+  }else{
+    boxes[i]="❌";
   }
 
-  let next = playerRole === "player1" ? "player2" : "player1";
+  let next=playerRole==="player1"?"player2":"player1";
 
-  await setDoc(doc(db, "games", roomId), {
-    ...data,
-    boxes,
-    scores,
-    turn: next
+  await setDoc(doc(db,"games",roomId),{
+    ...data,boxes,scores,turn:next
   });
 }
 
-// bot
-async function botMove(data) {
-  let empty = data.boxes
-    .map((b, i) => (b === "" ? i : null))
-    .filter(i => i !== null);
+// win screen
+function showWin(winner){
+  let win=document.getElementById("win-screen");
+  win.classList.remove("hidden");
+  winner-text.innerText="🏆 "+winner+" Wins!";
 
-  let i = empty[Math.floor(Math.random() * empty.length)];
+  setTimeout(()=>location.reload(),3000);
+}
 
-  let boxes = [...data.boxes];
-  let scores = { ...data.scores };
-
-  if (data.coins.includes(i)) {
-    boxes[i] = "🪙";
-    scores.player2++;
-  } else {
-    boxes[i] = "❌";
+// coins
+function generateCoins(){
+  let arr=[];
+  while(arr.length<8){
+    let r=Math.floor(Math.random()*25);
+    if(!arr.includes(r))arr.push(r);
   }
-
-  await setDoc(doc(db, "games", roomId), {
-    ...data,
-    boxes,
-    scores,
-    turn: "player1"
-  });
+  return arr;
 }
 
 // expose
-window.createRoom = createRoom;
-window.joinRoom = joinRoom;
-window.playWithBot = playWithBot;
+window.createRoom=createRoom;
+window.joinRoom=joinRoom;
+window.playWithBot=playWithBot;
