@@ -1,48 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Plutomars Games</title>
+  <title>Plutomars Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
+<div id="start-screen">
+  <h1>PLUTOMARS GAME</h1>
 
-  <!-- HOME -->
-  <div id="start-screen" class="card">
-    <h1>🚀 PLUTOMARS</h1>
+  <input type="text" id="username" placeholder="Enter username">
 
-    <input type="text" id="username" placeholder="Enter username">
+  <br>
+  <button onclick="createRoom()">Create Room</button>
 
-    <button onclick="createRoom()">🎮 Create Room</button>
+  <h3>Available Rooms</h3>
+  <div id="room-list"></div>
 
-    <h3>Available Rooms</h3>
-    <div id="room-list"></div>
-
-    <div class="divider"></div>
-
-    <button onclick="playWithBot()">🤖 Play with BLACKMITH</button>
-  </div>
-
-  <!-- GAME -->
-  <div id="game-screen" class="card hidden">
-    <h2 id="status"></h2>
-    <h3>🪙 Coins: <span id="score">0</span></h3>
-    <div id="grid"></div>
-  </div>
-
+  <br>
+  <button onclick="playWithBot()">Play with BOT</button>
 </div>
 
-<!-- WIN SCREEN -->
-<div id="win-screen" class="hidden">
-  <h1 id="winner-text"></h1>
+<div id="game-screen" class="hidden">
+  <h3 id="status"></h3>
+  <h3>Coins: <span id="score">0</span></h3>
+  <div id="grid"></div>
 </div>
-
-<!-- AUDIO -->
-<audio id="coinSound" src="https://assets.mixkit.co/sfx/preview/mixkit-coins-handling-1939.mp3"></audio>
-<audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
-<audio id="bgMusic" src="https://assets.mixkit.co/music/preview/mixkit-game-level-music-689.mp3" loop></audio>
 
 <script type="module" src="app.js"></script>
 </body>
