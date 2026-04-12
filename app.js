@@ -3,6 +3,7 @@ import { db, doc, setDoc, onSnapshot } from "./firebase.js";
 let playerName = "";
 let playerRole = "";
 let myTurn = false;
+let botTimerStarted = false;
 
 function startGame() {
   const name = document.getElementById("username").value;
@@ -22,8 +23,8 @@ async function initGame() {
   onSnapshot(gameRef, async (snap) => {
     let data = snap.data();
 
-    // ✅ Create game only once
-    if (!data || !data.boxes) {
+    // 🔄 Reset if needed
+    if (!data || data.winner || !data.boxes) {
       await setDoc(gameRef, {
         boxes: Array(25).fill(null),
         coins: generateCoins(),
@@ -32,15 +33,18 @@ async function initGame() {
         scores: { player1: 0, player2: 0 },
         winner: ""
       });
+      botTimerStarted = false;
       return;
     }
 
-    // ✅ Assign player safely
+    // 👥 Assign players
     if (!data.players.player1) {
       playerRole = "player1";
       await setDoc(gameRef, {
         players: { ...data.players, player1: playerName }
       }, { merge: true });
+
+      startBotTimer(); // ⏱️ start 5 sec timer
 
     } else if (!data.players.player2 && data.players.player1 !== playerName) {
       playerRole = "player2";
@@ -55,6 +59,27 @@ async function initGame() {
 
     renderGame(data);
   });
+}
+
+// ⏱️ BOT TIMER (5 seconds)
+function startBotTimer() {
+  if (botTimerStarted) return;
+  botTimerStarted = true;
+
+  setTimeout(async () => {
+    const gameRef = doc(db, "games", "room1");
+
+    onSnapshot(gameRef, async (snap) => {
+      let data = snap.data();
+
+      // If still no player2 → add BOT
+      if (data && !data.players.player2) {
+        await setDoc(gameRef, {
+          players: { ...data.players, player2: "BLACKMITH" }
+        }, { merge: true });
+      }
+    });
+  }, 5000);
 }
 
 function generateCoins() {
@@ -72,7 +97,7 @@ function renderGame(data) {
 
   let opponent =
     playerRole === "player1"
-      ? data.players.player2 || "🤖 BLACKMITH"
+      ? data.players.player2 || "Waiting..."
       : data.players.player1;
 
   document.getElementById("player").innerText =
@@ -94,7 +119,7 @@ function renderGame(data) {
     grid.appendChild(box);
   }
 
-  // ✅ End game
+  // 🏆 End game
   if (!data.boxes.includes(null) && !data.winner) {
     let p1 = data.scores.player1;
     let p2 = data.scores.player2;
@@ -102,7 +127,7 @@ function renderGame(data) {
     let winner = "Tie";
 
     if (p1 > p2) winner = data.players.player1;
-    else if (p2 > p1) winner = data.players.player2 || "BLACKMITH";
+    else if (p2 > p1) winner = data.players.player2;
 
     setDoc(doc(db, "games", "room1"), { winner }, { merge: true });
   }
@@ -111,17 +136,16 @@ function renderGame(data) {
     setTimeout(() => {
       alert("🏆 Winner: " + data.winner);
       location.reload();
-    }, 200);
+    }, 500);
   }
 
-  // ✅ BOT plays only when alone
-  if (!data.players.player2 && playerRole === "player1" && data.turn === "player2") {
+  // 🤖 BOT TURN
+  if (data.players.player2 === "BLACKMITH" && data.turn === "player2") {
     botMove(data);
   }
 }
 
 async function openBox(index, data) {
-  // ✅ Strict turn control
   if (!myTurn || data.turn !== playerRole) {
     alert("Not your turn");
     return;
@@ -150,14 +174,10 @@ async function openBox(index, data) {
   document.getElementById("score").innerText = newScores[playerRole];
 }
 
-// 🤖 BLACKMITH BOT
+// 🤖 BLACKMITH BOT MOVE
 function botMove(data) {
   setTimeout(async () => {
-    let empty = [];
-
-    data.boxes.forEach((b, i) => {
-      if (!b) empty.push(i);
-    });
+    let empty = data.boxes.map((b, i) => b ? null : i).filter(i => i !== null);
 
     let randomIndex = empty[Math.floor(Math.random() * empty.length)];
 
@@ -177,7 +197,7 @@ function botMove(data) {
       turn: "player1"
     }, { merge: true });
 
-  }, 1000);
+  }, 800);
 }
 
 window.startGame = startGame;
