@@ -13,12 +13,11 @@
   <input type="text" id="username" placeholder="Enter username"><br>
 
   <button onclick="createRoom()">Create Room</button>
-  <br><br>
 
-  <input type="text" id="roomInput" placeholder="Enter Room Code">
-  <button onclick="joinRoom()">Join Room</button>
+  <h3>Available Rooms</h3>
+  <div id="room-list"></div>
 
-  <br><br><hr>
+  <br><hr><br>
 
   <button onclick="playWithBot()">Play with BLACKMITH 🤖</button>
 </div>
@@ -31,7 +30,6 @@
 
 <div id="winner-banner" class="hidden">
   <h1 id="winner-text"></h1>
-  <button onclick="resetGame()">Play Again</button>
 </div>
 
 <script type="module" src="app.js"></script>
