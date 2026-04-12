@@ -6,14 +6,16 @@ let roomId = "";
 let isBotGame = false;
 let gameEnded = false;
 
+let timerInterval;
+let timeLeft = 30;
+
 window.onload = loadRooms;
 
 // create room
 async function createRoom() {
-  playerName = document.getElementById("username").value;
+  playerName = username.value;
   if (!playerName) return alert("Enter username");
 
-  isBotGame = false;
   roomId = Math.random().toString(36).substring(2, 7);
 
   await setDoc(doc(db, "games", roomId), {
@@ -30,7 +32,7 @@ async function createRoom() {
 
 // bot
 async function playWithBot() {
-  playerName = document.getElementById("username").value;
+  playerName = username.value;
   if (!playerName) return alert("Enter username");
 
   isBotGame = true;
@@ -48,7 +50,7 @@ async function playWithBot() {
   startGame();
 }
 
-// load rooms
+// rooms
 function loadRooms() {
   const list = document.getElementById("room-list");
 
@@ -57,7 +59,6 @@ function loadRooms() {
 
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
-
       if (!data.players.player2) {
         const div = document.createElement("div");
         div.className = "room-item";
@@ -71,11 +72,8 @@ function loadRooms() {
 
 // join
 function joinRoom(id) {
-  playerName = document.getElementById("username").value;
-  if (!playerName) return alert("Enter username");
-
+  playerName = username.value;
   roomId = id;
-  isBotGame = false;
   startGame();
 }
 
@@ -98,11 +96,7 @@ function initGame() {
 
     if (!data.players.player2 && data.players.player1 !== playerName && !isBotGame) {
       playerRole = "player2";
-
-      await setDoc(ref, {
-        ...data,
-        players: { ...data.players, player2: playerName }
-      });
+      await setDoc(ref, { ...data, players: { ...data.players, player2: playerName } });
       return;
     }
 
@@ -111,6 +105,25 @@ function initGame() {
 
     renderGame(data);
   });
+}
+
+// timer
+function startTimer(data) {
+  clearInterval(timerInterval);
+  timeLeft = 30;
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    document.getElementById("timer").innerText = timeLeft;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+
+      let next = data.turn === "player1" ? "player2" : "player1";
+
+      setDoc(doc(db, "games", roomId), { ...data, turn: next });
+    }
+  }, 1000);
 }
 
 // coins
@@ -135,17 +148,15 @@ function renderGame(data) {
     return;
   }
 
-  const currentTurnName =
-    data.turn === "player1"
-      ? data.players.player1
-      : data.players.player2;
+  const turnName = data.turn === "player1"
+    ? data.players.player1
+    : data.players.player2;
 
-  const opponent =
-    playerRole === "player1"
-      ? data.players.player2
-      : data.players.player1;
+  const opponent = playerRole === "player1"
+    ? data.players.player2
+    : data.players.player1;
 
-  status.innerText = `${playerName} vs ${opponent} | Turn: ${currentTurnName}`;
+  status.innerText = `${playerName} vs ${opponent} | Turn: ${turnName}`;
 
   document.getElementById("score").innerText =
     data.scores[playerRole] || 0;
@@ -153,39 +164,38 @@ function renderGame(data) {
   for (let i = 0; i < 25; i++) {
     let box = document.createElement("div");
     box.className = "box";
-    box.innerHTML = data.boxes[i];
+
+    if (data.boxes[i]) {
+      box.innerHTML = data.boxes[i];
+      box.classList.add("open");
+    }
+
     box.onclick = () => openBox(i, data);
     grid.appendChild(box);
   }
 
-  // winner check
-  if (!data.boxes.includes("") && !data.winner) {
-    let p1 = data.scores.player1;
-    let p2 = data.scores.player2;
+  startTimer(data);
 
+  if (!data.boxes.includes("") && !data.winner) {
     let winner =
-      p1 > p2 ? data.players.player1 :
-      p2 > p1 ? data.players.player2 : "Tie";
+      data.scores.player1 > data.scores.player2
+        ? data.players.player1
+        : data.scores.player2 > data.scores.player1
+        ? data.players.player2
+        : "Tie";
 
     setDoc(doc(db, "games", roomId), { ...data, winner });
   }
 
-  // show winner + go home
   if (data.winner && !gameEnded) {
     gameEnded = true;
-
-    status.innerText =
-      data.winner === "Tie"
-        ? "Match Tie 🤝"
-        : "Winner: " + data.winner;
+    status.innerText = "Winner: " + data.winner;
 
     setTimeout(() => {
-      document.getElementById("game-screen").classList.add("hidden");
-      document.getElementById("start-screen").classList.remove("hidden");
+      location.reload();
     }, 3000);
   }
 
-  // bot
   if (isBotGame && data.turn === "player2" && !gameEnded) {
     setTimeout(() => botMove(data), 800);
   }
@@ -195,27 +205,28 @@ function renderGame(data) {
 async function openBox(i, data) {
   if (gameEnded) return;
   if (data.turn !== playerRole) return;
-  if (data.boxes[i] !== "") return;
+  if (data.boxes[i]) return;
 
   let boxes = [...data.boxes];
   let scores = { ...data.scores };
 
   if (data.coins.includes(i)) {
     boxes[i] = "🪙";
-    scores[playerRole] = (scores[playerRole] || 0) + 1;
+    scores[playerRole]++;
+
+    coinSound.play();
   } else {
     boxes[i] = "❌";
+    clickSound.play();
   }
 
   let next = playerRole === "player1" ? "player2" : "player1";
 
   await setDoc(doc(db, "games", roomId), {
+    ...data,
     boxes,
     scores,
-    turn: next,
-    coins: data.coins,
-    players: data.players,
-    winner: data.winner || ""
+    turn: next
   });
 }
 
@@ -225,8 +236,6 @@ async function botMove(data) {
     .map((b, i) => (b === "" ? i : null))
     .filter(i => i !== null);
 
-  if (empty.length === 0) return;
-
   let i = empty[Math.floor(Math.random() * empty.length)];
 
   let boxes = [...data.boxes];
@@ -234,18 +243,16 @@ async function botMove(data) {
 
   if (data.coins.includes(i)) {
     boxes[i] = "🪙";
-    scores.player2 = (scores.player2 || 0) + 1;
+    scores.player2++;
   } else {
     boxes[i] = "❌";
   }
 
   await setDoc(doc(db, "games", roomId), {
+    ...data,
     boxes,
     scores,
-    turn: "player1",
-    coins: data.coins,
-    players: data.players,
-    winner: data.winner || ""
+    turn: "player1"
   });
 }
 
