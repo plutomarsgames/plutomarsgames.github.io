@@ -10,9 +10,7 @@ body {
   margin-top: 80px;
 }
 
-h1 {
-  color: gold;
-}
+h1 { color: gold; }
 
 input {
   padding: 12px;
@@ -30,9 +28,7 @@ button {
   cursor: pointer;
 }
 
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
 #grid {
   display: grid;
@@ -54,9 +50,7 @@ button {
   font-size: 22px;
 }
 
-.box.open {
-  background: #020617;
-}
+.box.open { background: #020617; }
 
 #winner-banner {
   position: fixed;
@@ -70,6 +64,4 @@ button {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 30px;
-  z-index: 999;
 }
