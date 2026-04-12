@@ -17,7 +17,6 @@ async function createRoom() {
   if (!playerName) return alert("Enter username");
 
   isBotGame = false;
-
   roomId = generateRoomCode();
 
   await setDoc(doc(db, "games", roomId), {
@@ -32,22 +31,18 @@ async function createRoom() {
   startGame();
 }
 
-// 🤖 bot mode
+// 🤖 bot
 async function playWithBot() {
   playerName = document.getElementById("username").value;
   if (!playerName) return alert("Enter username");
 
   isBotGame = true;
-
   roomId = generateRoomCode();
 
   await setDoc(doc(db, "games", roomId), {
     boxes: Array(25).fill(null),
     coins: generateCoins(),
-    players: {
-      player1: playerName,
-      player2: "BLACKMITH"
-    },
+    players: { player1: playerName, player2: "BLACKMITH" },
     turn: "player1",
     scores: { player1: 0, player2: 0 },
     winner: ""
@@ -56,7 +51,7 @@ async function playWithBot() {
   startGame();
 }
 
-// 🔄 LIVE ROOM LIST
+// 🔄 load rooms
 function loadRooms() {
   const list = document.getElementById("room-list");
 
@@ -82,7 +77,7 @@ function loadRooms() {
   });
 }
 
-// 🔗 join room
+// join
 function joinRoom(id) {
   playerName = document.getElementById("username").value;
   if (!playerName) return alert("Enter username");
@@ -92,16 +87,18 @@ function joinRoom(id) {
   startGame();
 }
 
-// ▶ start
+// start
 function startGame() {
   document.getElementById("start-screen").classList.add("hidden");
   document.getElementById("game-screen").classList.remove("hidden");
 
+  document.getElementById("winner-banner").style.display = "none";
   gameEnded = false;
+
   initGame();
 }
 
-// 🔄 init
+// init
 function initGame() {
   const ref = doc(db, "games", roomId);
 
@@ -127,7 +124,7 @@ function initGame() {
   });
 }
 
-// 🎲 coins
+// coins
 function generateCoins() {
   let arr = [];
   while (arr.length < 8) {
@@ -137,7 +134,7 @@ function generateCoins() {
   return arr;
 }
 
-// 🎮 render
+// render
 function renderGame(data) {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
@@ -184,23 +181,24 @@ function renderGame(data) {
     setDoc(doc(db, "games", roomId), { winner }, { merge: true });
   }
 
-  if (data.winner && !gameEnded) {
+  // show winner (FIXED)
+  if (data.winner && !gameEnded && data.boxes.every(b => b !== null)) {
     gameEnded = true;
 
-    document.getElementById("winner-banner").classList.remove("hidden");
+    document.getElementById("winner-banner").style.display = "flex";
     document.getElementById("winner-text").innerText =
       data.winner === "Tie"
         ? "🤝 It's a Tie!"
         : "🏆 " + data.winner + " Wins!";
   }
 
-  // 🤖 bot
+  // bot
   if (isBotGame && data.turn === "player2" && !gameEnded) {
     botMove(data);
   }
 }
 
-// 🎯 click
+// click
 async function openBox(i, data) {
   if (gameEnded) return;
 
@@ -231,7 +229,7 @@ async function openBox(i, data) {
   document.getElementById("score").innerText = scores[playerRole];
 }
 
-// 🤖 bot move
+// bot
 function botMove(data) {
   setTimeout(async () => {
     let empty = data.boxes.map((b, i) => b ? null : i).filter(i => i !== null);
@@ -254,7 +252,7 @@ function botMove(data) {
   }, 800);
 }
 
-// start room list
+// load
 window.onload = loadRooms;
 
 // expose
