@@ -4,6 +4,7 @@ let playerName = "";
 let playerRole = "";
 let myTurn = false;
 let botTimerStarted = false;
+let gameEnded = false;
 
 function startGame() {
   const name = document.getElementById("username").value;
@@ -23,7 +24,7 @@ async function initGame() {
   onSnapshot(gameRef, async (snap) => {
     let data = snap.data();
 
-    // 🔄 Reset if needed
+    // Reset if broken or finished
     if (!data || data.winner || !data.boxes) {
       await setDoc(gameRef, {
         boxes: Array(25).fill(null),
@@ -34,17 +35,18 @@ async function initGame() {
         winner: ""
       });
       botTimerStarted = false;
+      gameEnded = false;
       return;
     }
 
-    // 👥 Assign players
+    // Assign players
     if (!data.players.player1) {
       playerRole = "player1";
       await setDoc(gameRef, {
         players: { ...data.players, player1: playerName }
       }, { merge: true });
 
-      startBotTimer(); // ⏱️ start 5 sec timer
+      startBotTimer();
 
     } else if (!data.players.player2 && data.players.player1 !== playerName) {
       playerRole = "player2";
@@ -61,7 +63,7 @@ async function initGame() {
   });
 }
 
-// ⏱️ BOT TIMER (5 seconds)
+// ⏱ BOT AFTER 5 SEC
 function startBotTimer() {
   if (botTimerStarted) return;
   botTimerStarted = true;
@@ -72,7 +74,6 @@ function startBotTimer() {
     onSnapshot(gameRef, async (snap) => {
       let data = snap.data();
 
-      // If still no player2 → add BOT
       if (data && !data.players.player2) {
         await setDoc(gameRef, {
           players: { ...data.players, player2: "BLACKMITH" }
@@ -119,7 +120,7 @@ function renderGame(data) {
     grid.appendChild(box);
   }
 
-  // 🏆 End game
+  // 🏆 Winner logic
   if (!data.boxes.includes(null) && !data.winner) {
     let p1 = data.scores.player1;
     let p2 = data.scores.player2;
@@ -132,11 +133,14 @@ function renderGame(data) {
     setDoc(doc(db, "games", "room1"), { winner }, { merge: true });
   }
 
-  if (data.winner) {
+  // ✅ Show winner + reset
+  if (data.winner && !gameEnded) {
+    gameEnded = true;
+
     setTimeout(() => {
-      alert("🏆 Winner: " + data.winner);
-      location.reload();
-    }, 500);
+      let restart = confirm("🏆 Winner: " + data.winner + "\n\nPlay again?");
+      if (restart) resetGame();
+    }, 300);
   }
 
   // 🤖 BOT TURN
@@ -174,7 +178,7 @@ async function openBox(index, data) {
   document.getElementById("score").innerText = newScores[playerRole];
 }
 
-// 🤖 BLACKMITH BOT MOVE
+// 🤖 BOT MOVE
 function botMove(data) {
   setTimeout(async () => {
     let empty = data.boxes.map((b, i) => b ? null : i).filter(i => i !== null);
@@ -198,6 +202,20 @@ function botMove(data) {
     }, { merge: true });
 
   }, 800);
+}
+
+// 🔁 RESET GAME
+async function resetGame() {
+  await setDoc(doc(db, "games", "room1"), {
+    boxes: Array(25).fill(null),
+    coins: generateCoins(),
+    players: {},
+    turn: "player1",
+    scores: { player1: 0, player2: 0 },
+    winner: ""
+  });
+
+  location.reload();
 }
 
 window.startGame = startGame;
