@@ -3,23 +3,20 @@ import { db, doc, setDoc, onSnapshot, collection } from "./firebase.js";
 let playerName = "";
 let playerRole = "";
 let roomId = "";
-let gameEnded = false;
 let isBotGame = false;
+let gameEnded = false;
 
-// loading screen
 window.onload = () => {
-  setTimeout(() => {
-    document.getElementById("loading-screen").style.display = "none";
-    document.getElementById("main-app").classList.remove("hidden");
-    document.getElementById("bgMusic").play();
-  }, 1500);
-
   loadRooms();
 };
 
-// create
+// create room
 async function createRoom() {
   playerName = username.value;
+  if (!playerName) return alert("Enter username");
+
+  document.getElementById("bgMusic").play().catch(()=>{});
+
   roomId = Math.random().toString(36).substring(2,7);
 
   await setDoc(doc(db,"games",roomId),{
@@ -37,6 +34,10 @@ async function createRoom() {
 // bot
 async function playWithBot() {
   playerName = username.value;
+  if (!playerName) return alert("Enter username");
+
+  document.getElementById("bgMusic").play().catch(()=>{});
+
   isBotGame = true;
   roomId = Math.random().toString(36).substring(2,7);
 
@@ -61,6 +62,7 @@ function loadRooms(){
       const data=d.data();
       if(!data.players.player2){
         let div=document.createElement("div");
+        div.className="room-item";
         div.innerText="Room "+d.id;
         div.onclick=()=>joinRoom(d.id);
         list.appendChild(div);
@@ -78,8 +80,8 @@ function joinRoom(id){
 
 // start
 function startGame(){
-  start-screen.classList.add("hidden");
-  game-screen.classList.remove("hidden");
+  document.getElementById("start-screen").classList.add("hidden");
+  document.getElementById("game-screen").classList.remove("hidden");
   initGame();
 }
 
@@ -89,7 +91,7 @@ function initGame(){
     let data=snap.data();
     if(!data)return;
 
-    if(!data.players.player2 && data.players.player1!==playerName){
+    if(!data.players.player2 && data.players.player1!==playerName && !isBotGame){
       playerRole="player2";
       setDoc(doc(db,"games",roomId),{
         ...data,
@@ -108,7 +110,20 @@ function initGame(){
 // render
 function renderGame(data){
   const grid=document.getElementById("grid");
+  const status=document.getElementById("status");
+
   grid.innerHTML="";
+
+  if(!data.players.player2 && !isBotGame){
+    status.innerText="Waiting for player...";
+    return;
+  }
+
+  const turnName=data.turn==="player1"?data.players.player1:data.players.player2;
+  const opponent=playerRole==="player1"?data.players.player2:data.players.player1;
+
+  status.innerText=`${playerName} vs ${opponent} | Turn: ${turnName}`;
+  score.innerText=data.scores[playerRole]||0;
 
   for(let i=0;i<25;i++){
     let box=document.createElement("div");
@@ -123,11 +138,12 @@ function renderGame(data){
     grid.appendChild(box);
   }
 
-  // winner
   if(!data.boxes.includes("") && !data.winner){
     let w=data.scores.player1>data.scores.player2
       ?data.players.player1
-      :data.players.player2;
+      :data.scores.player2>data.scores.player1
+      ?data.players.player2
+      :"Tie";
 
     setDoc(doc(db,"games",roomId),{...data,winner:w});
   }
@@ -136,10 +152,14 @@ function renderGame(data){
     gameEnded=true;
     showWin(data.winner);
   }
+
+  if(isBotGame && data.turn==="player2" && !gameEnded){
+    setTimeout(()=>botMove(data),800);
+  }
 }
 
 // coin animation
-function showCoinAnimation(box){
+function showCoin(box){
   let coin=document.createElement("div");
   coin.className="coin";
   coin.innerText="🪙";
@@ -149,7 +169,6 @@ function showCoinAnimation(box){
   coin.style.top=rect.top+"px";
 
   document.body.appendChild(coin);
-
   setTimeout(()=>coin.remove(),800);
 }
 
@@ -164,9 +183,10 @@ async function openBox(i,data,box){
     boxes[i]="🪙";
     scores[playerRole]++;
     coinSound.play();
-    showCoinAnimation(box); // 💎 animation
+    showCoin(box);
   }else{
     boxes[i]="❌";
+    clickSound.play();
   }
 
   let next=playerRole==="player1"?"player2":"player1";
@@ -176,11 +196,31 @@ async function openBox(i,data,box){
   });
 }
 
-// win screen
-function showWin(winner){
+// bot
+async function botMove(data){
+  let empty=data.boxes.map((b,i)=>b===""?i:null).filter(i=>i!==null);
+  let i=empty[Math.floor(Math.random()*empty.length)];
+
+  let boxes=[...data.boxes];
+  let scores={...data.scores};
+
+  if(data.coins.includes(i)){
+    boxes[i]="🪙";
+    scores.player2++;
+  }else{
+    boxes[i]="❌";
+  }
+
+  await setDoc(doc(db,"games",roomId),{
+    ...data,boxes,scores,turn:"player1"
+  });
+}
+
+// win
+function showWin(w){
   let win=document.getElementById("win-screen");
   win.classList.remove("hidden");
-  winner-text.innerText="🏆 "+winner+" Wins!";
+  winner-text.innerText="🏆 "+w+" Wins!";
 
   setTimeout(()=>location.reload(),3000);
 }
