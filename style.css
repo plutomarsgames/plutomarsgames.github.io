@@ -8,24 +8,21 @@ body {
 
 h1 { color: gold; }
 
-input {
+input, button {
   padding: 12px;
   margin: 10px;
-  width: 220px;
   border-radius: 8px;
   border: none;
 }
 
 button {
-  padding: 12px 20px;
   background: gold;
-  border: none;
-  border-radius: 8px;
   cursor: pointer;
 }
 
 .hidden { display: none !important; }
 
+/* grid */
 #grid {
   display: grid;
   grid-template-columns: repeat(5, 70px);
@@ -42,10 +39,25 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   font-size: 22px;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
+.box:active {
+  transform: scale(0.9);
+}
+
+.box.open {
+  animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.5); }
+  to { transform: scale(1); }
+}
+
+/* rooms */
 .room-item {
   background: #1e293b;
   margin: 10px auto;
