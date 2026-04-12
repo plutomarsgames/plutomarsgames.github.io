@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: Arial;
-  background: linear-gradient(135deg, #0f172a, #020617);
+  background: #020617;
   color: white;
   text-align: center;
 }
@@ -48,7 +48,6 @@ button {
 
 .box.open { background: #020617; }
 
-/* room list */
 .room-item {
   background: #1e293b;
   margin: 10px auto;
@@ -63,7 +62,6 @@ button {
   color: black;
 }
 
-/* winner banner */
 #winner-banner {
   position: fixed;
   top: 0;
