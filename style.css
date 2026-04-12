@@ -49,7 +49,7 @@ button {
   font-size: 22px;
 }
 
-/* room list */
+/* rooms */
 .room-item {
   background: #1e293b;
   margin: 10px auto;
@@ -64,9 +64,9 @@ button {
   color: black;
 }
 
-/* winner FIX */
+/* winner */
 #winner-banner {
-  display: none; /* CRITICAL FIX */
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
@@ -82,10 +82,4 @@ button {
   color: black;
   padding: 40px;
   border-radius: 20px;
-  animation: pop 0.5s ease;
-}
-
-@keyframes pop {
-  from { transform: scale(0.5); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
 }
