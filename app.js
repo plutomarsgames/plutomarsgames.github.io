@@ -10,7 +10,7 @@ window.onload = loadRooms;
 
 // create room
 async function createRoom() {
-  playerName = username.value;
+  playerName = document.getElementById("username").value;
   if (!playerName) return alert("Enter username");
 
   isBotGame = false;
@@ -30,7 +30,7 @@ async function createRoom() {
 
 // bot
 async function playWithBot() {
-  playerName = username.value;
+  playerName = document.getElementById("username").value;
   if (!playerName) return alert("Enter username");
 
   isBotGame = true;
@@ -71,7 +71,7 @@ function loadRooms() {
 
 // join
 function joinRoom(id) {
-  playerName = username.value;
+  playerName = document.getElementById("username").value;
   if (!playerName) return alert("Enter username");
 
   roomId = id;
@@ -103,11 +103,11 @@ function initGame() {
         ...data,
         players: { ...data.players, player2: playerName }
       });
-    } else if (data.players.player1 === playerName) {
-      playerRole = "player1";
-    } else if (data.players.player2 === playerName) {
-      playerRole = "player2";
+      return;
     }
+
+    if (data.players.player1 === playerName) playerRole = "player1";
+    if (data.players.player2 === playerName) playerRole = "player2";
 
     renderGame(data);
   });
@@ -135,12 +135,18 @@ function renderGame(data) {
     return;
   }
 
-  let opponent =
+  const currentTurnName =
+    data.turn === "player1"
+      ? data.players.player1
+      : data.players.player2;
+
+  const opponent =
     playerRole === "player1"
       ? data.players.player2
       : data.players.player1;
 
-  status.innerText = `${playerName} vs ${opponent} | Turn: ${data.turn}`;
+  status.innerText = `${playerName} vs ${opponent} | Turn: ${currentTurnName}`;
+
   document.getElementById("score").innerText =
     data.scores[playerRole] || 0;
 
@@ -152,7 +158,7 @@ function renderGame(data) {
     grid.appendChild(box);
   }
 
-  // winner
+  // winner check
   if (!data.boxes.includes("") && !data.winner) {
     let p1 = data.scores.player1;
     let p2 = data.scores.player2;
@@ -161,18 +167,22 @@ function renderGame(data) {
       p1 > p2 ? data.players.player1 :
       p2 > p1 ? data.players.player2 : "Tie";
 
-    setDoc(doc(db, "games", roomId), {
-      ...data,
-      winner
-    });
+    setDoc(doc(db, "games", roomId), { ...data, winner });
   }
 
+  // show winner + go home
   if (data.winner && !gameEnded) {
     gameEnded = true;
+
     status.innerText =
       data.winner === "Tie"
         ? "Match Tie 🤝"
         : "Winner: " + data.winner;
+
+    setTimeout(() => {
+      document.getElementById("game-screen").classList.add("hidden");
+      document.getElementById("start-screen").classList.remove("hidden");
+    }, 3000);
   }
 
   // bot
