@@ -5,47 +5,23 @@ body {
   color: white;
 }
 
-/* container */
+/* container TOP aligned */
 .container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
+  align-items: flex-start; /* 🔥 FIX */
+  padding-top: 20px;
+  min-height: 100vh;
 }
 
 /* card */
 .card {
   background: rgba(255,255,255,0.05);
-  padding: 25px;
+  padding: 20px;
   border-radius: 20px;
   text-align: center;
   width: 320px;
   backdrop-filter: blur(12px);
-}
-
-/* input */
-input {
-  width: 90%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-}
-
-/* button */
-button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(135deg, gold, orange);
-  color: black;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:hover {
-  transform: scale(1.05);
 }
 
 /* grid */
@@ -57,7 +33,7 @@ button:hover {
   margin-top: 10px;
 }
 
-/* box */
+/* boxes */
 .box {
   width: 60px;
   height: 60px;
@@ -71,24 +47,8 @@ button:hover {
   transition: 0.2s;
 }
 
-.box:hover { transform: scale(1.1); }
 .box:active { transform: scale(0.9); }
-
-.box.open {
-  box-shadow: 0 0 15px gold;
-}
-
-/* coin animation */
-.coin {
-  position: absolute;
-  font-size: 24px;
-  animation: fly 0.8s ease forwards;
-}
-
-@keyframes fly {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(-50px); opacity: 0; }
-}
+.box.open { box-shadow: 0 0 15px gold; }
 
 /* win screen */
 #win-screen {
@@ -99,16 +59,8 @@ button:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 32px;
+  font-size: 30px;
   color: gold;
 }
 
 .hidden { display: none !important; }
-
-.room-item {
-  background: rgba(255,255,255,0.05);
-  margin: 5px 0;
-  padding: 10px;
-  border-radius: 10px;
-  cursor: pointer;
-}
