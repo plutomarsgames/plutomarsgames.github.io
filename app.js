@@ -1,11 +1,10 @@
-import { db, doc, setDoc, onSnapshot } from "./firebase.js";
+import { db, doc, setDoc, onSnapshot, getDoc } from "./firebase.js";
 
 let playerName = "";
 let playerRole = "";
 let myTurn = false;
 let roomId = "";
 let gameEnded = false;
-let botTimerStarted = false;
 
 // 🔑 Room Code
 function generateRoomCode() {
@@ -20,11 +19,11 @@ function createRoom() {
   roomId = generateRoomCode();
   alert("Room Code: " + roomId);
 
-  startGame();
+  startGame(true);
 }
 
-// 🔗 Join Room
-function joinRoom() {
+// 🔗 Join Room (FIXED)
+async function joinRoom() {
   playerName = document.getElementById("username").value;
   roomId = document.getElementById("roomInput").value.toUpperCase();
 
@@ -33,45 +32,69 @@ function joinRoom() {
     return;
   }
 
-  startGame();
+  const docSnap = await getDoc(doc(db, "games", roomId));
+
+  if (!docSnap.exists()) {
+    alert("❌ Room not found");
+    return;
+  }
+
+  startGame(false);
 }
 
-// ▶ Start Game
-function startGame() {
+// 🤖 BOT MODE
+function playWithBot() {
+  playerName = document.getElementById("username").value;
+  if (!playerName) return alert("Enter username");
+
+  roomId = generateRoomCode();
+
+  setDoc(doc(db, "games", roomId), {
+    boxes: Array(25).fill(null),
+    coins: generateCoins(),
+    players: { player1: playerName, player2: "BLACKMITH" },
+    turn: "player1",
+    scores: { player1: 0, player2: 0 },
+    winner: "",
+    rematch: {}
+  });
+
+  startGame(false);
+}
+
+// ▶ Start
+function startGame(isNew) {
   document.getElementById("start-screen").classList.add("hidden");
   document.getElementById("game-screen").classList.remove("hidden");
 
-  initGame();
+  initGame(isNew);
 }
 
-// 🔄 Init Game
-async function initGame() {
+// 🔄 Init
+async function initGame(isNew) {
   const gameRef = doc(db, "games", roomId);
+
+  if (isNew) {
+    await setDoc(gameRef, {
+      boxes: Array(25).fill(null),
+      coins: generateCoins(),
+      players: {},
+      turn: "player1",
+      scores: { player1: 0, player2: 0 },
+      winner: "",
+      rematch: {}
+    });
+  }
 
   onSnapshot(gameRef, async (snap) => {
     let data = snap.data();
 
-    // Create new room
-    if (!data) {
-      await setDoc(gameRef, {
-        boxes: Array(25).fill(null),
-        coins: generateCoins(),
-        players: {},
-        turn: "player1",
-        scores: { player1: 0, player2: 0 },
-        winner: ""
-      });
-      return;
-    }
-
-    // Assign players
+    // assign players
     if (!data.players.player1) {
       playerRole = "player1";
       await setDoc(gameRef, {
         players: { ...data.players, player1: playerName }
       }, { merge: true });
-
-      startBotTimer();
 
     } else if (!data.players.player2 && data.players.player1 !== playerName) {
       playerRole = "player2";
@@ -86,26 +109,6 @@ async function initGame() {
 
     renderGame(data);
   });
-}
-
-// ⏱ BOT after 5 sec
-function startBotTimer() {
-  if (botTimerStarted) return;
-  botTimerStarted = true;
-
-  setTimeout(async () => {
-    const gameRef = doc(db, "games", roomId);
-
-    onSnapshot(gameRef, async (snap) => {
-      let data = snap.data();
-
-      if (data && !data.players.player2) {
-        await setDoc(gameRef, {
-          players: { ...data.players, player2: "BLACKMITH" }
-        }, { merge: true });
-      }
-    });
-  }, 5000);
 }
 
 // 🎲 Coins
@@ -147,7 +150,7 @@ function renderGame(data) {
     grid.appendChild(box);
   }
 
-  // 🏆 Winner
+  // 🏆 winner
   if (!data.boxes.includes(null) && !data.winner) {
     let p1 = data.scores.player1;
     let p2 = data.scores.player2;
@@ -160,16 +163,21 @@ function renderGame(data) {
     setDoc(doc(db, "games", roomId), { winner }, { merge: true });
   }
 
+  // 🎉 show banner
   if (data.winner && !gameEnded) {
     gameEnded = true;
 
-    setTimeout(() => {
-      let restart = confirm("🏆 Winner: " + data.winner + "\n\nPlay again?");
-      if (restart) resetGame();
-    }, 300);
+    document.getElementById("winner-banner").classList.remove("hidden");
+    document.getElementById("winner-text").innerText =
+      data.winner === "Tie" ? "🤝 It's a Tie!" : "🏆 " + data.winner + " Wins!";
   }
 
-  // 🤖 BOT TURN
+  // 🔁 rematch
+  if (data.rematch?.player1 && data.rematch?.player2) {
+    resetGame();
+  }
+
+  // 🤖 bot
   if (data.players.player2 === "BLACKMITH" && data.turn === "player2") {
     botMove(data);
   }
@@ -177,6 +185,8 @@ function renderGame(data) {
 
 // 🎯 Click
 async function openBox(index, data) {
+  if (gameEnded) return;
+
   if (!myTurn || data.turn !== playerRole) {
     alert("Not your turn");
     return;
@@ -205,7 +215,7 @@ async function openBox(index, data) {
   document.getElementById("score").innerText = newScores[playerRole];
 }
 
-// 🤖 BOT MOVE
+// 🤖 BOT
 function botMove(data) {
   setTimeout(async () => {
     let empty = data.boxes.map((b, i) => b ? null : i).filter(i => i !== null);
@@ -231,16 +241,23 @@ function botMove(data) {
   }, 800);
 }
 
-// 🔁 RESET
+// 🔁 Rematch
+async function requestRematch() {
+  await setDoc(doc(db, "games", roomId), {
+    rematch: { [playerRole]: true }
+  }, { merge: true });
+}
+
+// 🔄 Reset
 async function resetGame() {
   await setDoc(doc(db, "games", roomId), {
     boxes: Array(25).fill(null),
     coins: generateCoins(),
-    players: {},
     turn: "player1",
     scores: { player1: 0, player2: 0 },
-    winner: ""
-  });
+    winner: "",
+    rematch: {}
+  }, { merge: true });
 
   location.reload();
 }
@@ -248,3 +265,5 @@ async function resetGame() {
 // expose
 window.createRoom = createRoom;
 window.joinRoom = joinRoom;
+window.playWithBot = playWithBot;
+window.requestRematch = requestRematch;
