@@ -6,53 +6,77 @@ body {
   text-align: center;
 }
 
-h1 { color: gold; }
+/* title */
+h1 {
+  color: gold;
+  margin-top: 20px;
+}
 
+/* input */
 input {
   padding: 12px;
   margin: 10px;
   width: 220px;
   border-radius: 8px;
   border: none;
+  outline: none;
 }
 
+/* buttons */
 button {
   padding: 12px 20px;
-  background: gold;
+  margin: 8px;
+  background: linear-gradient(135deg, gold, orange);
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
 }
 
-.hidden {
-  display: none !important;
+button:hover {
+  transform: scale(1.05);
 }
 
+/* game container spacing */
+#start-screen, #game-screen {
+  padding-top: 20px;
+}
+
+/* grid */
 #grid {
   display: grid;
-  grid-template-columns: repeat(5, 70px);
+  grid-template-columns: repeat(5, 65px);
   gap: 10px;
   justify-content: center;
   margin-top: 20px;
 }
 
+/* boxes */
 .box {
-  width: 70px;
-  height: 70px;
+  width: 65px;
+  height: 65px;
   background: #1e293b;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   font-size: 22px;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
+/* click feel */
+.box:active {
+  transform: scale(0.9);
+}
+
+/* rooms */
 .room-item {
   background: #1e293b;
-  margin: 10px auto;
+  margin: 8px auto;
   padding: 10px;
-  width: 260px;
+  width: 240px;
   border-radius: 8px;
   cursor: pointer;
 }
@@ -60,4 +84,9 @@ button {
 .room-item:hover {
   background: gold;
   color: black;
+}
+
+/* hidden */
+.hidden {
+  display: none !important;
 }
