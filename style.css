@@ -24,7 +24,10 @@ button {
   cursor: pointer;
 }
 
-.hidden { display: none; }
+/* ✅ CRITICAL FIX */
+.hidden {
+  display: none !important;
+}
 
 #grid {
   display: grid;
@@ -44,6 +47,38 @@ button {
   justify-content: center;
   cursor: pointer;
   font-size: 22px;
+}
+
+.box.open { background: #020617; }
+
+.room-item {
+  background: #1e293b;
+  margin: 10px auto;
+  padding: 10px;
+  width: 260px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.room-item:hover {
+  background: gold;
+  color: black;
+}
+
+/* ✅ overlay FIXED */
+#winner-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.95);
+  color: gold;
+  display: none; /* important */
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  z-index: 999;
 }
 
 .box.open { background: #020617; }
