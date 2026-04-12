@@ -3,29 +3,56 @@ import { db, doc, setDoc, onSnapshot } from "./firebase.js";
 let playerName = "";
 let playerRole = "";
 let myTurn = false;
-let botTimerStarted = false;
+let roomId = "";
 let gameEnded = false;
+let botTimerStarted = false;
 
+// 🔑 Room Code
+function generateRoomCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+// 🆕 Create Room
+function createRoom() {
+  playerName = document.getElementById("username").value;
+  if (!playerName) return alert("Enter username");
+
+  roomId = generateRoomCode();
+  alert("Room Code: " + roomId);
+
+  startGame();
+}
+
+// 🔗 Join Room
+function joinRoom() {
+  playerName = document.getElementById("username").value;
+  roomId = document.getElementById("roomInput").value.toUpperCase();
+
+  if (!playerName || !roomId) {
+    alert("Enter username and room code");
+    return;
+  }
+
+  startGame();
+}
+
+// ▶ Start Game
 function startGame() {
-  const name = document.getElementById("username").value;
-  if (!name) return alert("Enter username");
-
-  playerName = name;
-
   document.getElementById("start-screen").classList.add("hidden");
   document.getElementById("game-screen").classList.remove("hidden");
 
   initGame();
 }
 
+// 🔄 Init Game
 async function initGame() {
-  const gameRef = doc(db, "games", "room1");
+  const gameRef = doc(db, "games", roomId);
 
   onSnapshot(gameRef, async (snap) => {
     let data = snap.data();
 
-    // Reset if broken or finished
-    if (!data || data.winner || !data.boxes) {
+    // Create new room
+    if (!data) {
       await setDoc(gameRef, {
         boxes: Array(25).fill(null),
         coins: generateCoins(),
@@ -34,8 +61,6 @@ async function initGame() {
         scores: { player1: 0, player2: 0 },
         winner: ""
       });
-      botTimerStarted = false;
-      gameEnded = false;
       return;
     }
 
@@ -63,13 +88,13 @@ async function initGame() {
   });
 }
 
-// ⏱ BOT AFTER 5 SEC
+// ⏱ BOT after 5 sec
 function startBotTimer() {
   if (botTimerStarted) return;
   botTimerStarted = true;
 
   setTimeout(async () => {
-    const gameRef = doc(db, "games", "room1");
+    const gameRef = doc(db, "games", roomId);
 
     onSnapshot(gameRef, async (snap) => {
       let data = snap.data();
@@ -83,6 +108,7 @@ function startBotTimer() {
   }, 5000);
 }
 
+// 🎲 Coins
 function generateCoins() {
   let arr = [];
   while (arr.length < 8) {
@@ -92,6 +118,7 @@ function generateCoins() {
   return arr;
 }
 
+// 🎮 Render
 function renderGame(data) {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
@@ -102,7 +129,7 @@ function renderGame(data) {
       : data.players.player1;
 
   document.getElementById("player").innerText =
-    `You: ${playerName} vs ${opponent}`;
+    `Room: ${roomId} | You: ${playerName} vs ${opponent}`;
 
   myTurn = data.turn === playerRole;
 
@@ -120,7 +147,7 @@ function renderGame(data) {
     grid.appendChild(box);
   }
 
-  // 🏆 Winner logic
+  // 🏆 Winner
   if (!data.boxes.includes(null) && !data.winner) {
     let p1 = data.scores.player1;
     let p2 = data.scores.player2;
@@ -130,10 +157,9 @@ function renderGame(data) {
     if (p1 > p2) winner = data.players.player1;
     else if (p2 > p1) winner = data.players.player2;
 
-    setDoc(doc(db, "games", "room1"), { winner }, { merge: true });
+    setDoc(doc(db, "games", roomId), { winner }, { merge: true });
   }
 
-  // ✅ Show winner + reset
   if (data.winner && !gameEnded) {
     gameEnded = true;
 
@@ -149,6 +175,7 @@ function renderGame(data) {
   }
 }
 
+// 🎯 Click
 async function openBox(index, data) {
   if (!myTurn || data.turn !== playerRole) {
     alert("Not your turn");
@@ -169,7 +196,7 @@ async function openBox(index, data) {
 
   let nextTurn = playerRole === "player1" ? "player2" : "player1";
 
-  await setDoc(doc(db, "games", "room1"), {
+  await setDoc(doc(db, "games", roomId), {
     boxes: newBoxes,
     scores: newScores,
     turn: nextTurn
@@ -195,7 +222,7 @@ function botMove(data) {
       newBoxes[randomIndex] = "❌";
     }
 
-    await setDoc(doc(db, "games", "room1"), {
+    await setDoc(doc(db, "games", roomId), {
       boxes: newBoxes,
       scores: newScores,
       turn: "player1"
@@ -204,9 +231,9 @@ function botMove(data) {
   }, 800);
 }
 
-// 🔁 RESET GAME
+// 🔁 RESET
 async function resetGame() {
-  await setDoc(doc(db, "games", "room1"), {
+  await setDoc(doc(db, "games", roomId), {
     boxes: Array(25).fill(null),
     coins: generateCoins(),
     players: {},
@@ -218,4 +245,6 @@ async function resetGame() {
   location.reload();
 }
 
-window.startGame = startGame;
+// expose
+window.createRoom = createRoom;
+window.joinRoom = joinRoom;
