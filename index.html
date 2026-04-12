@@ -14,19 +14,39 @@
   <button onclick="createRoom()">Create Room</button>
 
   <h3>Available Rooms</h3>
-  <div id="room-list">Loading...</div>
+  <div id="room-list"></div>
 
-  <br><hr><br>
+  <hr>
+
+  <h3>❤️ Support Developer</h3>
+  <p><b>plutomars@slc</b></p>
+  <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=plutomars@slc&pn=Plutomars&cu=INR">
+
+  <br><br>
+  <button onclick="copyUPI()">Copy UPI ID</button>
+
+  <hr>
 
   <button onclick="playWithBot()">Play with BLACKMITH 🤖</button>
 </div>
 
 <div id="game-screen" class="hidden">
-  <h2 id="player"></h2>
-  <h3 id="status"></h3>
+  <h2 id="status"></h2>
+  <h3>⏱ Time Left: <span id="timer">30</span>s</h3>
   <h3>Coins: <span id="score">0</span></h3>
   <div id="grid"></div>
 </div>
+
+<!-- sounds -->
+<audio id="coinSound" src="https://assets.mixkit.co/sfx/preview/mixkit-coins-handling-1939.mp3"></audio>
+<audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
+
+<script>
+function copyUPI() {
+  navigator.clipboard.writeText("plutomars@slc");
+  alert("UPI copied!");
+}
+</script>
 
 <script type="module" src="app.js"></script>
 </body>
