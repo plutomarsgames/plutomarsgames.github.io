@@ -7,7 +7,13 @@
 </head>
 <body>
 
-<div class="container">
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+  <h1>🚀 PLUTOMARS</h1>
+  <p>Loading Game...</p>
+</div>
+
+<div class="container hidden" id="main-app">
 
   <!-- HOME -->
   <div id="start-screen" class="card">
@@ -34,8 +40,14 @@
 
 </div>
 
+<!-- WIN SCREEN -->
+<div id="win-screen" class="hidden">
+  <h1 id="winner-text"></h1>
+</div>
+
+<!-- AUDIO -->
 <audio id="coinSound" src="https://assets.mixkit.co/sfx/preview/mixkit-coins-handling-1939.mp3"></audio>
-<audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
+<audio id="bgMusic" src="https://assets.mixkit.co/music/preview/mixkit-game-level-music-689.mp3" loop></audio>
 
 <script type="module" src="app.js"></script>
 </body>
