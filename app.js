@@ -5,12 +5,12 @@ let playerRole = "";
 let roomId = "";
 let gameEnded = false;
 
-// 🔑 Room Code
+// room code
 function generateRoomCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
-// 🆕 Create Room
+// create
 function createRoom() {
   playerName = document.getElementById("username").value;
   if (!playerName) return alert("Enter username");
@@ -21,24 +21,20 @@ function createRoom() {
   startGame(true);
 }
 
-// 🔗 Join Room
+// join
 async function joinRoom() {
   playerName = document.getElementById("username").value;
   roomId = document.getElementById("roomInput").value.toUpperCase();
 
-  if (!playerName || !roomId) return alert("Enter details");
-
   const snap = await getDoc(doc(db, "games", roomId));
-  if (!snap.exists()) return alert("❌ Room not found");
+  if (!snap.exists()) return alert("Room not found");
 
   startGame(false);
 }
 
-// 🤖 BOT MODE
+// bot
 function playWithBot() {
   playerName = document.getElementById("username").value;
-  if (!playerName) return alert("Enter username");
-
   roomId = generateRoomCode();
 
   setDoc(doc(db, "games", roomId), {
@@ -53,18 +49,16 @@ function playWithBot() {
   startGame(false);
 }
 
-// ▶ START
+// start
 function startGame(isNew) {
   document.getElementById("start-screen").classList.add("hidden");
   document.getElementById("game-screen").classList.remove("hidden");
 
-  document.getElementById("winner-banner").classList.add("hidden");
   gameEnded = false;
-
   initGame(isNew);
 }
 
-// 🔄 INIT
+// init
 async function initGame(isNew) {
   const ref = doc(db, "games", roomId);
 
@@ -83,36 +77,27 @@ async function initGame(isNew) {
     let data = snap.data();
     if (!data) return;
 
-    // FIX: reset old game automatically
-    if (data.winner) {
-      await setDoc(ref, {
-        boxes: Array(25).fill(null),
-        coins: generateCoins(),
-        players: {},
-        turn: "player1",
-        scores: { player1: 0, player2: 0 },
-        winner: ""
-      });
-      return;
-    }
-
-    // assign players
+    // player assign (fixed)
     if (!data.players.player1) {
       playerRole = "player1";
       await setDoc(ref, { players: { ...data.players, player1: playerName } }, { merge: true });
+
     } else if (!data.players.player2 && data.players.player1 !== playerName) {
       playerRole = "player2";
       await setDoc(ref, { players: { ...data.players, player2: playerName } }, { merge: true });
-    } else {
-      if (data.players.player1 === playerName) playerRole = "player1";
-      if (data.players.player2 === playerName) playerRole = "player2";
+
+    } else if (data.players.player1 === playerName) {
+      playerRole = "player1";
+
+    } else if (data.players.player2 === playerName) {
+      playerRole = "player2";
     }
 
     renderGame(data);
   });
 }
 
-// 🎲 Coins
+// coins
 function generateCoins() {
   let arr = [];
   while (arr.length < 8) {
@@ -122,18 +107,28 @@ function generateCoins() {
   return arr;
 }
 
-// 🎮 RENDER
+// render
 function renderGame(data) {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
+  // waiting
+  if (!data.players.player2 && data.players.player2 !== "BLACKMITH") {
+    document.getElementById("player").innerText =
+      `Room: ${roomId} | Waiting for opponent...`;
+    return;
+  }
+
   let opponent =
     playerRole === "player1"
-      ? data.players.player2 || "Waiting..."
+      ? data.players.player2
       : data.players.player1;
 
+  let turnText =
+    data.turn === playerRole ? "🟢 Your Turn" : "🔴 Opponent Turn";
+
   document.getElementById("player").innerText =
-    `Room: ${roomId} | ${playerName} vs ${opponent}`;
+    `Room: ${roomId}\n${playerName} vs ${opponent}\n${turnText}`;
 
   for (let i = 0; i < 25; i++) {
     let box = document.createElement("div");
@@ -153,13 +148,13 @@ function renderGame(data) {
     let p1 = data.scores.player1;
     let p2 = data.scores.player2;
 
-    let winner = p1 > p2 ? data.players.player1 :
-                 p2 > p1 ? data.players.player2 : "Tie";
+    let winner =
+      p1 > p2 ? data.players.player1 :
+      p2 > p1 ? data.players.player2 : "Tie";
 
     setDoc(doc(db, "games", roomId), { winner }, { merge: true });
   }
 
-  // show banner
   if (data.winner && !gameEnded) {
     gameEnded = true;
 
@@ -169,16 +164,22 @@ function renderGame(data) {
   }
 
   // bot
-  if (data.players.player2 === "BLACKMITH" && data.turn === "player2") {
+  if (data.players.player2 === "BLACKMITH" && data.turn === "player2" && !gameEnded) {
     botMove(data);
   }
 }
 
-// 🎯 CLICK
+// click
 async function openBox(i, data) {
   if (gameEnded) return;
+
+  if (!data.players.player2) {
+    alert("Waiting for opponent");
+    return;
+  }
+
+  if (data.turn !== playerRole) return alert("Not your turn");
   if (data.boxes[i]) return;
-  if (data.turn !== playerRole) return alert("Wait turn");
 
   let newBoxes = [...data.boxes];
   let scores = { ...data.scores };
@@ -199,7 +200,7 @@ async function openBox(i, data) {
   document.getElementById("score").innerText = scores[playerRole];
 }
 
-// 🤖 BOT
+// bot
 function botMove(data) {
   setTimeout(async () => {
     let empty = data.boxes.map((b, i) => b ? null : i).filter(i => i !== null);
@@ -222,17 +223,8 @@ function botMove(data) {
   }, 800);
 }
 
-// 🔁 RESET
+// reset
 async function resetGame() {
-  await setDoc(doc(db, "games", roomId), {
-    boxes: Array(25).fill(null),
-    coins: generateCoins(),
-    players: {},
-    turn: "player1",
-    scores: { player1: 0, player2: 0 },
-    winner: ""
-  });
-
   location.reload();
 }
 
