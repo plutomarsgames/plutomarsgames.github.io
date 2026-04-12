@@ -6,13 +6,11 @@ let roomId = "";
 let isBotGame = false;
 let gameEnded = false;
 
-window.onload = () => {
-  loadRooms();
-};
+window.onload = loadRooms;
 
-// ✅ FIX username
+// username
 function getName() {
-  const name = document.getElementById("username").value;
+  let name = document.getElementById("username").value;
   if (!name) {
     alert("Enter username");
     return null;
@@ -27,58 +25,58 @@ async function createRoom() {
 
   isBotGame = false;
 
-  roomId = Math.random().toString(36).substring(2,7);
+  roomId = Math.random().toString(36).substring(2, 7);
 
-  await setDoc(doc(db,"games",roomId),{
-    boxes:Array(25).fill(""),
-    coins:generateCoins(),
-    players:{player1:playerName},
-    turn:"player1",
-    scores:{player1:0,player2:0},
-    winner:""
+  await setDoc(doc(db, "games", roomId), {
+    boxes: Array(25).fill(""),
+    coins: generateCoins(),
+    players: { player1: playerName },
+    turn: "player1",
+    scores: { player1: 0, player2: 0 },
+    winner: ""
   });
 
   startGame();
 }
 
-// 🤖 BOT FIXED
+// bot mode
 async function playWithBot() {
   playerName = getName();
   if (!playerName) return;
 
   isBotGame = true;
 
-  roomId = Math.random().toString(36).substring(2,7);
+  roomId = Math.random().toString(36).substring(2, 7);
 
-  await setDoc(doc(db,"games",roomId),{
-    boxes:Array(25).fill(""),
-    coins:generateCoins(),
-    players:{
+  await setDoc(doc(db, "games", roomId), {
+    boxes: Array(25).fill(""),
+    coins: generateCoins(),
+    players: {
       player1: playerName,
-      player2: "BLACKMITH"
+      player2: "BOT"
     },
-    turn:"player1",
-    scores:{player1:0,player2:0},
-    winner:""
+    turn: "player1",
+    scores: { player1: 0, player2: 0 },
+    winner: ""
   });
 
   startGame();
 }
 
-// rooms
-function loadRooms(){
-  onSnapshot(collection(db,"games"),(snap)=>{
-    const list=document.getElementById("room-list");
-    list.innerHTML="";
+// load rooms
+function loadRooms() {
+  const list = document.getElementById("room-list");
 
-    snap.forEach(d=>{
-      const data=d.data();
+  onSnapshot(collection(db, "games"), (snap) => {
+    list.innerHTML = "";
 
-      if(!data.players.player2){
-        let div=document.createElement("div");
-        div.className="room-item";
-        div.innerText="Room "+d.id;
-        div.onclick=()=>joinRoom(d.id);
+    snap.forEach((docSnap) => {
+      const data = docSnap.data();
+
+      if (!data.players.player2) {
+        let div = document.createElement("div");
+        div.innerText = "Room: " + docSnap.id;
+        div.onclick = () => joinRoom(docSnap.id);
         list.appendChild(div);
       }
     });
@@ -86,36 +84,37 @@ function loadRooms(){
 }
 
 // join
-function joinRoom(id){
+function joinRoom(id) {
   playerName = getName();
   if (!playerName) return;
 
   isBotGame = false;
-  roomId=id;
+  roomId = id;
+
   startGame();
 }
 
 // start
-function startGame(){
+function startGame() {
   document.getElementById("start-screen").classList.add("hidden");
   document.getElementById("game-screen").classList.remove("hidden");
+
   gameEnded = false;
   initGame();
 }
 
 // init
-function initGame(){
-  onSnapshot(doc(db,"games",roomId),(snap)=>{
-    let data=snap.data();
-    if(!data)return;
+function initGame() {
+  onSnapshot(doc(db, "games", roomId), async (snap) => {
+    let data = snap.data();
+    if (!data) return;
 
-    // assign roles
     if (!data.players.player2 && !isBotGame && data.players.player1 !== playerName) {
       playerRole = "player2";
 
-      setDoc(doc(db,"games",roomId),{
+      await setDoc(doc(db, "games", roomId), {
         ...data,
-        players:{...data.players, player2: playerName}
+        players: { ...data.players, player2: playerName }
       });
       return;
     }
@@ -128,14 +127,14 @@ function initGame(){
 }
 
 // render
-function renderGame(data){
-  const grid=document.getElementById("grid");
-  const status=document.getElementById("status");
+function renderGame(data) {
+  const grid = document.getElementById("grid");
+  const status = document.getElementById("status");
 
-  grid.innerHTML="";
+  grid.innerHTML = "";
 
-  if(!data.players.player2){
-    status.innerText="Waiting for player...";
+  if (!data.players.player2) {
+    status.innerText = "Waiting for player...";
     return;
   }
 
@@ -150,25 +149,23 @@ function renderGame(data){
       : data.players.player1;
 
   status.innerText = `${playerName} vs ${opponent} | Turn: ${turnName}`;
-
   document.getElementById("score").innerText =
     data.scores[playerRole] || 0;
 
-  for(let i=0;i<25;i++){
-    let box=document.createElement("div");
-    box.className="box";
+  for (let i = 0; i < 25; i++) {
+    let box = document.createElement("div");
+    box.className = "box";
 
-    if(data.boxes[i]){
-      box.innerHTML=data.boxes[i];
-      box.classList.add("open");
+    if (data.boxes[i]) {
+      box.innerHTML = data.boxes[i];
     }
 
-    box.onclick=()=>openBox(i,data,box);
+    box.onclick = () => openBox(i, data);
     grid.appendChild(box);
   }
 
   // winner
-  if(!data.boxes.includes("") && !data.winner){
+  if (!data.boxes.includes("") && !data.winner) {
     let w =
       data.scores.player1 > data.scores.player2
         ? data.players.player1
@@ -176,39 +173,41 @@ function renderGame(data){
         ? data.players.player2
         : "Tie";
 
-    setDoc(doc(db,"games",roomId),{...data, winner:w});
+    setDoc(doc(db, "games", roomId), { ...data, winner: w });
   }
 
-  if(data.winner && !gameEnded){
+  if (data.winner && !gameEnded) {
     gameEnded = true;
-    showWin(data.winner);
+    status.innerText = "Winner: " + data.winner;
+
+    setTimeout(() => location.reload(), 3000);
   }
 
-  // 🤖 BOT TURN FIX
-  if(isBotGame && data.turn === "player2" && !gameEnded){
-    setTimeout(()=>botMove(data),600);
+  // bot move
+  if (isBotGame && data.turn === "player2" && !gameEnded) {
+    setTimeout(() => botMove(data), 600);
   }
 }
 
 // click
-async function openBox(i,data,box){
-  if(gameEnded) return;
-  if(data.turn !== playerRole) return;
-  if(data.boxes[i]) return;
+async function openBox(i, data) {
+  if (gameEnded) return;
+  if (data.turn !== playerRole) return;
+  if (data.boxes[i]) return;
 
-  let boxes=[...data.boxes];
-  let scores={...data.scores};
+  let boxes = [...data.boxes];
+  let scores = { ...data.scores };
 
-  if(data.coins.includes(i)){
-    boxes[i]="🪙";
+  if (data.coins.includes(i)) {
+    boxes[i] = "🪙";
     scores[playerRole]++;
   } else {
-    boxes[i]="❌";
+    boxes[i] = "❌";
   }
 
   let next = playerRole === "player1" ? "player2" : "player1";
 
-  await setDoc(doc(db,"games",roomId),{
+  await setDoc(doc(db, "games", roomId), {
     ...data,
     boxes,
     scores,
@@ -216,54 +215,43 @@ async function openBox(i,data,box){
   });
 }
 
-// 🤖 BOT LOGIC FIXED
-async function botMove(data){
+// bot
+async function botMove(data) {
   let empty = data.boxes
-    .map((b,i)=> b==="" ? i : null)
-    .filter(i=>i!==null);
+    .map((b, i) => (b === "" ? i : null))
+    .filter((i) => i !== null);
 
-  if(empty.length === 0) return;
+  let i = empty[Math.floor(Math.random() * empty.length)];
 
-  let i = empty[Math.floor(Math.random()*empty.length)];
+  let boxes = [...data.boxes];
+  let scores = { ...data.scores };
 
-  let boxes=[...data.boxes];
-  let scores={...data.scores};
-
-  if(data.coins.includes(i)){
-    boxes[i]="🪙";
+  if (data.coins.includes(i)) {
+    boxes[i] = "🪙";
     scores.player2++;
   } else {
-    boxes[i]="❌";
+    boxes[i] = "❌";
   }
 
-  await setDoc(doc(db,"games",roomId),{
+  await setDoc(doc(db, "games", roomId), {
     ...data,
     boxes,
     scores,
-    turn:"player1"
+    turn: "player1"
   });
 }
 
-// win
-function showWin(w){
-  let win=document.getElementById("win-screen");
-  win.classList.remove("hidden");
-  document.getElementById("winner-text").innerText="🏆 "+w+" Wins!";
-
-  setTimeout(()=>location.reload(),3000);
-}
-
 // coins
-function generateCoins(){
-  let arr=[];
-  while(arr.length<8){
-    let r=Math.floor(Math.random()*25);
-    if(!arr.includes(r))arr.push(r);
+function generateCoins() {
+  let arr = [];
+  while (arr.length < 8) {
+    let r = Math.floor(Math.random() * 25);
+    if (!arr.includes(r)) arr.push(r);
   }
   return arr;
 }
 
 // expose
-window.createRoom=createRoom;
-window.joinRoom=joinRoom;
-window.playWithBot=playWithBot;
+window.createRoom = createRoom;
+window.joinRoom = joinRoom;
+window.playWithBot = playWithBot;
