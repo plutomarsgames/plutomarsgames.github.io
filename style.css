@@ -24,7 +24,6 @@ button {
   cursor: pointer;
 }
 
-/* ✅ CRITICAL FIX */
 .hidden {
   display: none !important;
 }
@@ -65,48 +64,40 @@ button {
   color: black;
 }
 
-/* ✅ overlay FIXED */
+/* 🏆 Winner Popup */
 #winner-banner {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.95);
-  color: gold;
-  display: none; /* important */
+  background: rgba(0,0,0,0.9);
+  display: none;
   justify-content: center;
   align-items: center;
-  font-size: 30px;
   z-index: 999;
 }
 
-.box.open { background: #020617; }
-
-.room-item {
-  background: #1e293b;
-  margin: 10px auto;
-  padding: 10px;
-  width: 260px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.room-item:hover {
-  background: gold;
+.winner-box {
+  background: linear-gradient(135deg, gold, orange);
   color: black;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  animation: pop 0.5s ease;
 }
 
-#winner-banner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.95);
-  color: gold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 30px;
+#winner-text {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.winner-sub {
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
