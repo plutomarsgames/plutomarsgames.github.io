@@ -11,7 +11,7 @@ function generateRoomCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
-// 🆕 create room
+// create room
 async function createRoom() {
   playerName = document.getElementById("username").value;
   if (!playerName) return alert("Enter username");
@@ -31,7 +31,7 @@ async function createRoom() {
   startGame();
 }
 
-// 🤖 bot
+// bot mode
 async function playWithBot() {
   playerName = document.getElementById("username").value;
   if (!playerName) return alert("Enter username");
@@ -51,7 +51,7 @@ async function playWithBot() {
   startGame();
 }
 
-// 🔄 load rooms
+// live rooms
 function loadRooms() {
   const list = document.getElementById("room-list");
 
@@ -181,15 +181,22 @@ function renderGame(data) {
     setDoc(doc(db, "games", roomId), { winner }, { merge: true });
   }
 
-  // show winner (FIXED)
+  // 🎉 winner UI
   if (data.winner && !gameEnded && data.boxes.every(b => b !== null)) {
     gameEnded = true;
 
-    document.getElementById("winner-banner").style.display = "flex";
-    document.getElementById("winner-text").innerText =
-      data.winner === "Tie"
-        ? "🤝 It's a Tie!"
-        : "🏆 " + data.winner + " Wins!";
+    const banner = document.getElementById("winner-banner");
+    const text = document.getElementById("winner-text");
+
+    banner.style.display = "flex";
+
+    if (data.winner === "Tie") {
+      text.innerText = "🤝 It's a Tie!";
+    } else if (data.winner === playerName) {
+      text.innerText = "🏆 You Win!";
+    } else {
+      text.innerText = `💀 ${data.winner} Wins!`;
+    }
   }
 
   // bot
