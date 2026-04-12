@@ -8,22 +8,6 @@
 <body>
 
 <div id="start-screen">
-<hr>
-
-<h3>❤️ Support Developer</h3>
-
-<p>UPI ID: <b id="upi-text">plutomars@slc</b></p>
-
-<img 
-  src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi://pay?pa=plutomars@slc&pn=Plutomars&cu=INR" 
-  alt="UPI QR Code"
-  style="border-radius:10px; margin-top:10px;"
->
-
-<br><br>
-
-<button onclick="copyUPI()">📋 Copy UPI ID</button>
-
   <h1>🚀 PLUTOMARS GAMES</h1>
 
   <input type="text" id="username" placeholder="Enter username"><br>
@@ -43,6 +27,22 @@
   <h3>Coins: <span id="score">0</span></h3>
   <div id="grid"></div>
 </div>
+<hr>
+
+<h3>❤️ Support Developer</h3>
+
+<p>UPI ID: <b id="upi-text">plutomars@slc</b></p>
+
+<img 
+  src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi://pay?pa=plutomars@slc&pn=Plutomars&cu=INR" 
+  alt="UPI QR Code"
+  style="border-radius:10px; margin-top:10px;"
+>
+
+<br><br>
+
+<button onclick="copyUPI()">📋 Copy UPI ID</button>
+
 
 <script type="module" src="app.js"></script>
 <script>
