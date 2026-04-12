@@ -1,23 +1,17 @@
 import { db, doc, setDoc, onSnapshot } from "./firebase.js";
 
 let playerName = "";
-let playerRole = ""; // player1 / player2
+let playerRole = "";
 let myTurn = false;
 
 function startGame() {
-  let name = document.getElementById("username").value;
-
-  if (!name) {
-    alert("Enter username");
-    return;
-  }
+  const name = document.getElementById("username").value;
+  if (!name) return alert("Enter username");
 
   playerName = name;
 
   document.getElementById("start-screen").classList.add("hidden");
   document.getElementById("game-screen").classList.remove("hidden");
-
-  document.getElementById("player").innerText = "Player: " + name;
 
   initGame();
 }
@@ -28,8 +22,8 @@ async function initGame() {
   onSnapshot(gameRef, async (snap) => {
     let data = snap.data();
 
-    if (!data) {
-      // Create game
+    // ✅ Create game only once
+    if (!data || !data.boxes) {
       await setDoc(gameRef, {
         boxes: Array(25).fill(null),
         coins: generateCoins(),
@@ -41,7 +35,7 @@ async function initGame() {
       return;
     }
 
-    // Assign player
+    // ✅ Assign player safely
     if (!data.players.player1) {
       playerRole = "player1";
       await setDoc(gameRef, {
@@ -54,10 +48,9 @@ async function initGame() {
         players: { ...data.players, player2: playerName }
       }, { merge: true });
 
-    } else if (data.players.player1 === playerName) {
-      playerRole = "player1";
-    } else if (data.players.player2 === playerName) {
-      playerRole = "player2";
+    } else {
+      if (data.players.player1 === playerName) playerRole = "player1";
+      if (data.players.player2 === playerName) playerRole = "player2";
     }
 
     renderGame(data);
@@ -77,7 +70,6 @@ function renderGame(data) {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  // 👇 BOT NAME UPDATED HERE
   let opponent =
     playerRole === "player1"
       ? data.players.player2 || "🤖 BLACKMITH"
@@ -102,7 +94,7 @@ function renderGame(data) {
     grid.appendChild(box);
   }
 
-  // End game check
+  // ✅ End game
   if (!data.boxes.includes(null) && !data.winner) {
     let p1 = data.scores.player1;
     let p2 = data.scores.player2;
@@ -122,15 +114,16 @@ function renderGame(data) {
     }, 200);
   }
 
-  // 🤖 BOT TURN (BLACKMITH)
-  if (!data.players.player2 && data.turn === "player2") {
+  // ✅ BOT plays only when alone
+  if (!data.players.player2 && playerRole === "player1" && data.turn === "player2") {
     botMove(data);
   }
 }
 
 async function openBox(index, data) {
-  if (!myTurn) {
-    alert("Wait for your turn");
+  // ✅ Strict turn control
+  if (!myTurn || data.turn !== playerRole) {
+    alert("Not your turn");
     return;
   }
 
@@ -153,9 +146,11 @@ async function openBox(index, data) {
     scores: newScores,
     turn: nextTurn
   }, { merge: true });
+
+  document.getElementById("score").innerText = newScores[playerRole];
 }
 
-// 🤖 BLACKMITH BOT LOGIC
+// 🤖 BLACKMITH BOT
 function botMove(data) {
   setTimeout(async () => {
     let empty = [];
