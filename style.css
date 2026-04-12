@@ -24,9 +24,7 @@ button {
   cursor: pointer;
 }
 
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
 #grid {
   display: grid;
