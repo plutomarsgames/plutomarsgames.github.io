@@ -52,28 +52,30 @@ header{
 
 /* HERO */
 .hero{
-  margin:20px;
-  border-radius:20px;
-  overflow:hidden;
-  position:relative;
+  height:80vh;
+  background:url("assets/hero.jpg") center/cover no-repeat;
+  display:flex;
+  align-items:center;
 }
 
-.hero img{
-  width:100%;
-}
-
-.hero-text{
-  position:absolute;
-  top:30%;
-  left:40px;
+.overlay{
+  background:rgba(0,0,0,0.6);
+  padding:40px;
+  margin-left:50px;
+  border-radius:10px;
 }
 
 .hero h1{
   font-size:50px;
+  line-height:1.2;
 }
 
 .hero span{
   color:gold;
+}
+
+.hero p{
+  color:#ccc;
 }
 
 .btn{
@@ -90,17 +92,10 @@ header{
   padding:20px;
 }
 
-.section-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   gap:20px;
-  margin-top:15px;
 }
 
 .card{
@@ -132,7 +127,17 @@ header{
 
 /* MOBILE */
 @media(max-width:768px){
-  .hero h1{font-size:28px;}
+  .hero{
+    height:60vh;
+  }
+
+  .hero h1{
+    font-size:28px;
+  }
+
+  .overlay{
+    margin:20px;
+  }
 }
 </style>
 </head>
@@ -154,19 +159,16 @@ header{
 
 <!-- HERO -->
 <div class="hero">
-  <img src="assets/banner.jpg">
-
-  <div class="hero-text">
-    <h1>PLAY GAMES.<br><span>HAVE FUN.</span></h1>
-    <button class="btn">🎮 EXPLORE GAMES</button>
+  <div class="overlay">
+    <h1>ELEVATE YOUR<br>GAMING EXPERIENCE<br><span>WITH AI.</span></h1>
+    <p>The best place to play modern online games</p>
+    <button class="btn">GET STARTED</button>
   </div>
 </div>
 
-<!-- WORKING GAMES ONLY -->
+<!-- GAMES -->
 <div class="section">
-  <div class="section-header">
-    <h2>🎮 PLAY NOW</h2>
-  </div>
+  <h2>🎮 PLAY NOW</h2>
 
   <div class="grid">
 
@@ -181,13 +183,13 @@ header{
       </button>
     </div>
 
-    <!-- GAME 2 -->
+    <!-- FIND COINS -->
     <div class="card">
-      <img src="assets/car.jpg">
-      <h3>GAME 2</h3>
-      <p>New action game</p>
+      <img src="assets/findcoins.jpg">
+      <h3>FIND COINS</h3>
+      <p>Collect coins and survive the adventure</p>
       <button class="btn"
-      onclick="playGame('Game 2','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">
+      onclick="playGame('Find Coins','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">
       ▶ PLAY NOW
       </button>
     </div>
