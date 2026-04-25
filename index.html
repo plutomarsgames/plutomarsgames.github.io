@@ -1,34 +1,179 @@
-<div class="games">
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Plutomars Games</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- GAME 1 -->
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #0b0b0b;
+      color: white;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: #111;
+      flex-wrap: wrap;
+    }
+
+    .logo img {
+      height: 50px;
+    }
+
+    /* LIVE BANNER */
+    .banner {
+      background: linear-gradient(90deg, red, orange);
+      padding: 8px;
+      text-align: center;
+      font-weight: bold;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0.6; }
+    }
+
+    /* HERO */
+    .hero {
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 32px;
+    }
+
+    .hero span {
+      color: gold;
+    }
+
+    .btn {
+      padding: 10px 15px;
+      background: gold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* STREAMING */
+    .stream {
+      padding: 20px;
+    }
+
+    .stream iframe {
+      width: 100%;
+      height: 200px;
+      border-radius: 10px;
+    }
+
+    /* GAMES */
+    .games {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+
+    .card {
+      background: #151515;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .card h3 {
+      font-size: 14px;
+    }
+
+    @media(min-width: 768px) {
+      .hero h1 {
+        font-size: 50px;
+      }
+
+      .stream iframe {
+        height: 400px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+<!-- LOGO -->
+<header>
+  <div class="logo">
+    <img src="assets/logo.png">
+  </div>
+</header>
+
+<!-- LIVE ANNOUNCEMENT -->
+<div class="banner">
+  🔴 LIVE UPDATE: New Games Coming Soon!
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>PLAY GAMES.<br><span>HAVE FUN.</span></h1>
+  <button class="btn" onclick="scrollToGames()">Explore Games</button>
+</div>
+
+<!-- STREAMING -->
+<div class="stream">
+  <h2>🔴 Streaming Now</h2>
+
+  <!-- YouTube Live / Video -->
+  <iframe src="https://www.youtube.com/embed/live_stream?channel=YOUR_CHANNEL_ID"></iframe>
+</div>
+
+<!-- GAMES -->
+<div class="games" id="games">
+
   <div class="card">
-    <h2>Game 01</h2>
+    <img src="https://via.placeholder.com/300x200">
+    <h3>Mines</h3>
     <button class="btn"
-      onclick="playGame(
-        'Game 01',
-        'https://plutomarsgames.github.io/plutomarsgames01.github.io/'
-      )">
+      onclick="playGame('Mines','https://plutomarsgames.github.io/plutomarsgames01.github.io/')">
       Play
     </button>
   </div>
 
-  <!-- GAME 2 -->
   <div class="card">
-    <h2>Game 02</h2>
+    <img src="https://via.placeholder.com/300x200">
+    <h3>Game 2</h3>
     <button class="btn"
-      onclick="playGame(
-        'Game 02',
-        'https://plutomarsgames.github.io/plutomarsgames02.github.io/'
-      )">
+      onclick="playGame('Game 2','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">
       Play
     </button>
   </div>
 
 </div>
+
 <script>
+
+function scrollToGames() {
+  document.getElementById("games").scrollIntoView();
+}
+
 function playGame(name, url) {
   window.location.href =
     "play.html?name=" + encodeURIComponent(name) +
     "&url=" + encodeURIComponent(url);
 }
+
 </script>
+
+</body>
+</html>
