@@ -28,13 +28,12 @@ header{
 
 .nav{
   display:flex;
-  gap:20px;
-  align-items:center;
+  gap:25px;
 }
 
 .nav a{
-  text-decoration:none;
   color:#aaa;
+  text-decoration:none;
   font-weight:bold;
 }
 
@@ -44,23 +43,29 @@ header{
 
 .live{
   color:red;
-  font-weight:bold;
+  animation:blink 1s infinite;
+}
+
+@keyframes blink{
+  50%{opacity:0.5;}
 }
 
 /* HERO */
 .hero{
   margin:20px;
   border-radius:20px;
-  padding:40px;
-  background:linear-gradient(90deg,#000,#111);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
+  overflow:hidden;
+  position:relative;
+}
+
+.hero img{
+  width:100%;
 }
 
 .hero-text{
-  max-width:500px;
+  position:absolute;
+  top:30%;
+  left:40px;
 }
 
 .hero h1{
@@ -69,10 +74,6 @@ header{
 
 .hero span{
   color:gold;
-}
-
-.hero p{
-  color:#aaa;
 }
 
 .btn{
@@ -84,7 +85,7 @@ header{
   font-weight:bold;
 }
 
-/* GAMES */
+/* SECTION */
 .section{
   padding:20px;
 }
@@ -107,10 +108,12 @@ header{
   border-radius:15px;
   padding:10px;
   transition:0.3s;
+  box-shadow:0 0 10px rgba(255,255,255,0.05);
 }
 
 .card:hover{
   transform:translateY(-5px);
+  box-shadow:0 0 20px gold;
 }
 
 .card img{
@@ -129,7 +132,7 @@ header{
 
 /* MOBILE */
 @media(max-width:768px){
-  .hero h1{font-size:32px;}
+  .hero h1{font-size:28px;}
 }
 </style>
 </head>
@@ -146,30 +149,30 @@ header{
     <a href="#">TRENDING</a>
     <a href="#" class="live">🔴 LIVE</a>
     <a href="#">ALL GAMES</a>
-    <a href="#">FAVORITES</a>
   </div>
 </header>
 
 <!-- HERO -->
 <div class="hero">
+  <img src="assets/banner.jpg">
+
   <div class="hero-text">
     <h1>PLAY GAMES.<br><span>HAVE FUN.</span></h1>
-    <p>The best place to play free online games!</p>
     <button class="btn">🎮 EXPLORE GAMES</button>
   </div>
 </div>
 
-<!-- FEATURED -->
+<!-- WORKING GAMES ONLY -->
 <div class="section">
   <div class="section-header">
-    <h2>🎮 FEATURED GAMES</h2>
-    <button class="btn">VIEW ALL</button>
+    <h2>🎮 PLAY NOW</h2>
   </div>
 
   <div class="grid">
 
+    <!-- MINES -->
     <div class="card">
-      <img src="https://img.icons8.com/color/480/minesweeper.png">
+      <img src="assets/mines.jpg">
       <h3>MINES</h3>
       <p>Classic mind game</p>
       <button class="btn"
@@ -178,25 +181,15 @@ header{
       </button>
     </div>
 
+    <!-- GAME 2 -->
     <div class="card">
-      <img src="https://img.icons8.com/color/480/sports-car.png">
-      <h3>SPEED RUSH</h3>
-      <p>Fast. Furious. Fun.</p>
-      <button class="btn">▶ PLAY NOW</button>
-    </div>
-
-    <div class="card">
-      <img src="https://img.icons8.com/color/480/running.png">
-      <h3>STICK RUNNER</h3>
-      <p>Run. Jump. Survive.</p>
-      <button class="btn">▶ PLAY NOW</button>
-    </div>
-
-    <div class="card">
-      <img src="https://img.icons8.com/color/480/tank.png">
-      <h3>TANK BATTLE</h3>
-      <p>Dominate the arena</p>
-      <button class="btn">▶ PLAY NOW</button>
+      <img src="assets/car.jpg">
+      <h3>GAME 2</h3>
+      <p>New action game</p>
+      <button class="btn"
+      onclick="playGame('Game 2','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">
+      ▶ PLAY NOW
+      </button>
     </div>
 
   </div>
