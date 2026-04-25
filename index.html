@@ -25,3 +25,10 @@
   </div>
 
 </div>
+<script>
+function playGame(name, url) {
+  window.location.href =
+    "play.html?name=" + encodeURIComponent(name) +
+    "&url=" + encodeURIComponent(url);
+}
+</script>
