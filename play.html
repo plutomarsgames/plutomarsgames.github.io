@@ -4,12 +4,7 @@
 <title>Play Game</title>
 
 <style>
-body{
-  margin:0;
-  background:black;
-  color:white;
-  font-family:Arial;
-}
+body{margin:0;background:black;color:white;font-family:Arial;}
 
 .topbar{
   background:#111;
@@ -21,9 +16,8 @@ body{
 .back{
   background:gold;
   border:none;
-  padding:8px 15px;
-  border-radius:8px;
-  cursor:pointer;
+  padding:6px 12px;
+  border-radius:6px;
 }
 
 iframe{
@@ -37,20 +31,16 @@ iframe{
 <body>
 
 <div class="topbar">
-  <h2 id="title">Game</h2>
-  <button class="back" onclick="goBack()">⬅ Back</button>
+  <h3 id="title"></h3>
+  <button class="back" onclick="location.href='index.html'">⬅</button>
 </div>
 
 <iframe id="gameFrame"></iframe>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-document.getElementById("gameFrame").src = params.get("url");
-document.getElementById("title").innerText = params.get("name");
-
-function goBack(){
-  window.location.href="index.html";
-}
+const p = new URLSearchParams(location.search);
+document.getElementById("gameFrame").src = p.get("url");
+document.getElementById("title").innerText = p.get("name");
 </script>
 
 </body>
