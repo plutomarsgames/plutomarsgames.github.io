@@ -12,21 +12,19 @@
       color: white;
     }
 
-    /* HEADER */
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 10px 20px;
       background: #111;
-      flex-wrap: wrap;
     }
 
     .logo img {
-      height: 50px;
+      height: 55px;
+      filter: drop-shadow(0 0 15px #ff00ff);
     }
 
-    /* LIVE BANNER */
     .banner {
       background: linear-gradient(90deg, red, orange);
       padding: 8px;
@@ -39,14 +37,14 @@
       50% { opacity: 0.6; }
     }
 
-    /* HERO */
     .hero {
-      padding: 30px 20px;
+      padding: 60px 20px;
       text-align: center;
+      background: radial-gradient(circle at center, #111, #000);
     }
 
     .hero h1 {
-      font-size: 32px;
+      font-size: 40px;
     }
 
     .hero span {
@@ -62,21 +60,19 @@
       font-weight: bold;
     }
 
-    /* STREAMING */
     .stream {
       padding: 20px;
     }
 
     .stream iframe {
       width: 100%;
-      height: 200px;
+      height: 220px;
       border-radius: 10px;
     }
 
-    /* GAMES */
     .games {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 15px;
       padding: 20px;
     }
@@ -86,6 +82,11 @@
       border-radius: 10px;
       padding: 10px;
       text-align: center;
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
     }
 
     .card img {
@@ -93,18 +94,9 @@
       border-radius: 10px;
     }
 
-    .card h3 {
-      font-size: 14px;
-    }
-
-    @media(min-width: 768px) {
-      .hero h1 {
-        font-size: 50px;
-      }
-
-      .stream iframe {
-        height: 400px;
-      }
+    @media(min-width:768px){
+      .hero h1 { font-size: 55px; }
+      .stream iframe { height: 400px; }
     }
 
   </style>
@@ -112,37 +104,30 @@
 
 <body>
 
-<!-- LOGO -->
 <header>
   <div class="logo">
     <img src="assets/logo.png">
   </div>
 </header>
 
-<!-- LIVE ANNOUNCEMENT -->
 <div class="banner">
   🔴 LIVE UPDATE: New Games Coming Soon!
 </div>
 
-<!-- HERO -->
 <div class="hero">
   <h1>PLAY GAMES.<br><span>HAVE FUN.</span></h1>
-  <button class="btn" onclick="scrollToGames()">Explore Games</button>
+  <button class="btn" onclick="scrollToGames()">🎮 Explore Games</button>
 </div>
 
-<!-- STREAMING -->
 <div class="stream">
   <h2>🔴 Streaming Now</h2>
-
-  <!-- YouTube Live / Video -->
-  <iframe src="https://www.youtube.com/embed/live_stream?channel=YOUR_CHANNEL_ID"></iframe>
+  <iframe src="https://www.youtube.com/live/lBFQHOeqyM8?si=Uy2XDnyiuy8FZ1Tj"></iframe>
 </div>
 
-<!-- GAMES -->
 <div class="games" id="games">
 
   <div class="card">
-    <img src="https://via.placeholder.com/300x200">
+    <img src="https://img.icons8.com/color/480/minesweeper.png">
     <h3>Mines</h3>
     <button class="btn"
       onclick="playGame('Mines','https://plutomarsgames.github.io/plutomarsgames01.github.io/')">
@@ -151,7 +136,7 @@
   </div>
 
   <div class="card">
-    <img src="https://via.placeholder.com/300x200">
+    <img src="https://img.icons8.com/color/480/car.png">
     <h3>Game 2</h3>
     <button class="btn"
       onclick="playGame('Game 2','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">
@@ -162,7 +147,6 @@
 </div>
 
 <script>
-
 function scrollToGames() {
   document.getElementById("games").scrollIntoView();
 }
@@ -172,7 +156,6 @@ function playGame(name, url) {
     "play.html?name=" + encodeURIComponent(name) +
     "&url=" + encodeURIComponent(url);
 }
-
 </script>
 
 </body>
