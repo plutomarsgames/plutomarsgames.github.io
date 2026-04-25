@@ -17,18 +17,19 @@ header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:15px 30px;
+  padding:12px 20px;
   background:#0a0d16;
 }
 
 .logo img{
-  height:55px;
-  filter:drop-shadow(0 0 10px #ff00ff);
+  height:45px;
+  filter:drop-shadow(0 0 8px #ff00ff);
 }
 
 .nav{
   display:flex;
-  gap:25px;
+  gap:15px;
+  font-size:14px;
 }
 
 .nav a{
@@ -52,7 +53,7 @@ header{
 
 /* HERO */
 .hero{
-  height:80vh;
+  height:60vh;
   background:url("assets/hero.jpg") center/cover no-repeat;
   display:flex;
   align-items:center;
@@ -60,83 +61,89 @@ header{
 
 .overlay{
   background:rgba(0,0,0,0.6);
-  padding:40px;
-  margin-left:50px;
+  padding:25px;
+  margin-left:20px;
   border-radius:10px;
 }
 
 .hero h1{
-  font-size:50px;
-  line-height:1.2;
+  font-size:32px;
 }
 
 .hero span{
   color:gold;
 }
 
-.hero p{
-  color:#ccc;
-}
-
 .btn{
   background:gold;
   border:none;
-  padding:12px 20px;
-  border-radius:10px;
+  padding:8px 14px;
+  border-radius:8px;
   cursor:pointer;
   font-weight:bold;
+  font-size:13px;
 }
 
 /* SECTION */
 .section{
-  padding:20px;
+  padding:15px;
 }
 
+/* GRID (PRO STYLE) */
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:20px;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:12px;
 }
 
+/* CARD */
 .card{
   background:#111827;
-  border-radius:15px;
-  padding:10px;
+  border-radius:12px;
+  overflow:hidden;
   transition:0.3s;
-  box-shadow:0 0 10px rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.05);
 }
 
 .card:hover{
-  transform:translateY(-5px);
-  box-shadow:0 0 20px gold;
+  transform:translateY(-4px);
+  box-shadow:0 0 15px gold;
 }
 
 .card img{
   width:100%;
-  border-radius:10px;
+  height:140px;
+  object-fit:cover;
+  display:block;
+}
+
+.card-content{
+  padding:8px;
 }
 
 .card h3{
-  margin:10px 0;
+  font-size:14px;
+  margin:5px 0;
 }
 
 .card p{
+  font-size:12px;
   color:#aaa;
-  font-size:14px;
+  margin-bottom:6px;
 }
 
-/* MOBILE */
-@media(max-width:768px){
+/* MOBILE FIX */
+@media(max-width:600px){
+  .grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
   .hero{
-    height:60vh;
+    height:50vh;
   }
 
   .hero h1{
-    font-size:28px;
-  }
-
-  .overlay{
-    margin:20px;
+    font-size:24px;
   }
 }
 </style>
@@ -153,45 +160,48 @@ header{
     <a href="#">HOME</a>
     <a href="#">TRENDING</a>
     <a href="#" class="live">🔴 LIVE</a>
-    <a href="#">ALL GAMES</a>
+    <a href="#">ALL</a>
   </div>
 </header>
 
 <!-- HERO -->
 <div class="hero">
   <div class="overlay">
-    <h1>ELEVATE YOUR<br>GAMING EXPERIENCE<br><span>WITH AI.</span></h1>
-    <p>The best place to play modern online games</p>
-    <button class="btn">GET STARTED</button>
+    <h1>ELEVATE YOUR<br><span>GAMING</span></h1>
+    <button class="btn">EXPLORE</button>
   </div>
 </div>
 
 <!-- GAMES -->
 <div class="section">
-  <h2>🎮 PLAY NOW</h2>
+  <h3>🎮 PLAY NOW</h3>
 
   <div class="grid">
 
     <!-- MINES -->
     <div class="card">
       <img src="assets/mines.jpg">
-      <h3>MINES</h3>
-      <p>Classic mind game</p>
-      <button class="btn"
-      onclick="playGame('Mines','https://plutomarsgames.github.io/plutomarsgames01.github.io/')">
-      ▶ PLAY NOW
-      </button>
+      <div class="card-content">
+        <h3>MINES</h3>
+        <p>Classic mind game</p>
+        <button class="btn"
+        onclick="playGame('Mines','https://plutomarsgames.github.io/plutomarsgames01.github.io/')">
+        ▶ PLAY
+        </button>
+      </div>
     </div>
 
     <!-- FIND COINS -->
     <div class="card">
       <img src="assets/findcoins.jpg">
-      <h3>FIND COINS</h3>
-      <p>Collect coins and survive the adventure</p>
-      <button class="btn"
-      onclick="playGame('Find Coins','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">
-      ▶ PLAY NOW
-      </button>
+      <div class="card-content">
+        <h3>FIND COINS</h3>
+        <p>Collect & survive</p>
+        <button class="btn"
+        onclick="playGame('Find Coins','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">
+        ▶ PLAY
+        </button>
+      </div>
     </div>
 
   </div>
