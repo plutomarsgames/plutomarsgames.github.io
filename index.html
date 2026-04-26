@@ -310,8 +310,8 @@ function scrollToGames(){
 }
 
 /* FINAL WORKING GAME FUNCTION */
-function openGame(url){
-  window.location.href = url;
+function openGame(name,url){
+  window.location.href = "play.html?name=" + encodeURIComponent(name) + "&url=" + encodeURIComponent(url);
 }
 </script>
 
