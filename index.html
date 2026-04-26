@@ -8,14 +8,14 @@
 body{
   margin:0;
   font-family:Arial;
-  background:#050816;
+  background:radial-gradient(circle at top,#0b0f1a,#020617);
   color:white;
 }
 
 /* CONTAINER */
 .container{
-  width:90%;
-  max-width:1200px;
+  width:95%;
+  max-width:1300px;
   margin:auto;
 }
 
@@ -32,12 +32,13 @@ header{
 }
 
 .logo img{
-  height:60px;
+  height:65px;
 }
 
+/* NAV */
 .nav{
   display:flex;
-  gap:20px;
+  gap:30px;
 }
 
 .nav a{
@@ -64,16 +65,31 @@ header{
 
 .hero-box{
   background:rgba(0,0,0,0.6);
-  padding:25px;
+  padding:30px;
   border-radius:10px;
+  max-width:500px;
+}
+
+.hero h1{
+  font-size:34px;
+}
+
+.hero span{
+  color:#ff00ff;
+}
+
+.hero p{
+  color:#ccc;
 }
 
 .btn{
   background:#ff00ff;
   border:none;
-  padding:10px;
-  color:white;
+  padding:10px 18px;
   border-radius:8px;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
 }
 
 /* SECTION */
@@ -81,38 +97,94 @@ header{
   padding:40px 0;
 }
 
-.games-row{
+.section-header{
   display:flex;
-  gap:20px;
-  overflow-x:auto;
+  justify-content:space-between;
+  align-items:center;
 }
 
+/* GAMES */
+.games-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:25px;
+  margin-top:20px;
+}
+
+/* CARD */
 .card{
-  width:200px;
+  width:220px;
   background:#0f172a;
-  border-radius:10px;
-  padding:10px;
+  padding:12px;
+  border-radius:12px;
+  transition:0.3s;
+}
+
+.card:hover{
+  transform:translateY(-8px) scale(1.03);
+  box-shadow:0 0 20px #ff00ff;
 }
 
 .card img{
   width:100%;
-}
-
-/* VIDEO */
-.video-card{
-  width:220px;
-  background:#0f172a;
   border-radius:10px;
-  overflow:hidden;
 }
 
-.video-card img{
-  width:100%;
+.card h3{
+  font-size:14px;
 }
 
-.video-card p{
-  padding:8px;
+.card p{
   font-size:12px;
+  color:#aaa;
+}
+
+.card button{
+  margin-top:5px;
+  background:#ff00ff;
+  border:none;
+  padding:6px 10px;
+  border-radius:6px;
+  color:white;
+  cursor:pointer;
+}
+
+/* LIVE SECTION */
+#liveVideo{
+  margin-top:15px;
+  background:#000;
+  padding:10px;
+  border-radius:10px;
+}
+
+/* MOBILE */
+@media(max-width:600px){
+
+  .logo img{
+    height:45px;
+  }
+
+  .nav{
+    gap:12px;
+    font-size:12px;
+  }
+
+  .games-row{
+    overflow-x:auto;
+    flex-wrap:nowrap;
+  }
+
+  .card{
+    min-width:160px;
+  }
+
+  .hero{
+    height:50vh;
+  }
+
+  .hero h1{
+    font-size:22px;
+  }
 }
 </style>
 </head>
@@ -121,6 +193,7 @@ header{
 
 <header>
   <div class="container header-inner">
+
     <div class="logo">
       <img src="assets/logo.png">
     </div>
@@ -130,6 +203,7 @@ header{
       <a href="#games">GAMES</a>
       <a href="#live" class="live">● LIVE</a>
     </div>
+
   </div>
 </header>
 
@@ -137,8 +211,9 @@ header{
 <div id="home" class="hero">
   <div class="container">
     <div class="hero-box">
-      <h1>PLAY GAMES.<br>HAVE FUN.</h1>
-      <button class="btn">EXPLORE</button>
+      <h1>PLAY GAMES.<br><span>HAVE FUN.</span></h1>
+      <p>The best place to play free online games!</p>
+      <button class="btn">🎮 EXPLORE</button>
     </div>
   </div>
 </div>
@@ -146,20 +221,28 @@ header{
 <!-- GAMES -->
 <div id="games" class="section">
   <div class="container">
-    <h2>FEATURED GAMES</h2>
+    <div class="section-header">
+      <h2>🎮 FEATURED GAMES</h2>
+    </div>
 
     <div class="games-row">
 
       <div class="card">
         <img src="assets/mines.jpg">
-        <p>MINES</p>
-        <button onclick="playGame('Mines','https://plutomarsgames.github.io/plutomarsgames01.github.io/')">PLAY</button>
+        <h3>MINES</h3>
+        <p>Classic mind game</p>
+        <button onclick="playGame('Mines','https://plutomarsgames.github.io/plutomarsgames01.github.io/')">
+          ▶ PLAY
+        </button>
       </div>
 
       <div class="card">
         <img src="assets/findcoins.jpg">
-        <p>FIND COINS</p>
-        <button onclick="playGame('Find Coins','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">PLAY</button>
+        <h3>FIND COINS</h3>
+        <p>Collect & survive</p>
+        <button onclick="playGame('Find Coins','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">
+          ▶ PLAY
+        </button>
       </div>
 
     </div>
@@ -171,7 +254,7 @@ header{
   <div class="container">
     <h2>🔴 LIVE STREAM</h2>
 
-    <div id="liveVideo"></div>
+    <div id="liveVideo">Live streaming loading...</div>
 
     <h2>Latest Videos</h2>
     <div id="videoList" class="games-row"></div>
@@ -182,40 +265,48 @@ header{
 const API_KEY = "AIzaSyA_4LCieXQLzVHX7APxfr5_b6MtbgmPHjA";
 const CHANNEL_ID = "UCdO65ekLVmHT48V-kJFE_Fg";
 
+/* LIVE VIDEO */
 async function loadLive(){
-  let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&eventType=live&type=video&key=${API_KEY}`;
-  let res = await fetch(url);
-  let data = await res.json();
+  try{
+    let res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&eventType=live&type=video&key=${API_KEY}`);
+    let data = await res.json();
 
-  if(data.items.length > 0){
-    let id = data.items[0].id.videoId;
-    liveVideo.innerHTML = `<iframe width="100%" height="300"
-    src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
-  }else{
-    liveVideo.innerHTML = "<p>No live stream now</p>";
+    if(data.items.length > 0){
+      let id = data.items[0].id.videoId;
+      liveVideo.innerHTML = `<iframe width="100%" height="300" src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
+    }else{
+      liveVideo.innerHTML = "<p>No live stream now</p>";
+    }
+  }catch{
+    liveVideo.innerHTML = "<p>Live unavailable</p>";
   }
 }
 
+/* VIDEOS */
 async function loadVideos(){
-  let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&maxResults=6&order=date&type=video&key=${API_KEY}`;
-  let res = await fetch(url);
-  let data = await res.json();
+  try{
+    let res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&maxResults=6&type=video&order=date&key=${API_KEY}`);
+    let data = await res.json();
 
-  let html="";
-  data.items.forEach(v=>{
-    html+=`
-    <div class="video-card">
-      <img src="${v.snippet.thumbnails.high.url}">
-      <p>${v.snippet.title}</p>
-    </div>`;
-  });
+    let html="";
+    data.items.forEach(v=>{
+      html+=`
+      <div class="card">
+        <img src="${v.snippet.thumbnails.high.url}">
+        <p>${v.snippet.title}</p>
+      </div>`;
+    });
 
-  videoList.innerHTML = html;
+    videoList.innerHTML = html;
+  }catch{
+    videoList.innerHTML = "<p>Videos not loading</p>";
+  }
 }
 
 loadLive();
 loadVideos();
 
+/* PLAY GAME */
 function playGame(name,url){
   window.location.href="play.html?name="+name+"&url="+url;
 }
