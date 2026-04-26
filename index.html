@@ -35,7 +35,6 @@ header{
   align-items:center;
 }
 
-/* LOGO */
 .logo img{
   height:65px;
   filter: drop-shadow(0 0 10px #ff00ff);
@@ -77,17 +76,35 @@ header{
   color:red;
 }
 
-.live::after{
-  content:" LIVE";
-  font-size:10px;
-}
-
-/* HERO */
+/* HERO + SLIDER */
 .hero{
+  position:relative;
   height:60vh;
-  background:url("assets/hero.jpg") center/cover no-repeat;
   display:flex;
   align-items:center;
+  overflow:hidden;
+}
+
+.slider{
+  position:absolute;
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
+  z-index:-1;
+}
+
+.slide{
+  position:absolute;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition:opacity 1s ease-in-out;
+}
+
+.slide.active{
+  opacity:1;
 }
 
 .hero-box{
@@ -95,7 +112,6 @@ header{
   padding:30px;
   border-radius:10px;
   max-width:500px;
-  animation:fadeIn 1s forwards;
 }
 
 .hero h1{
@@ -129,7 +145,6 @@ header{
 /* SECTION */
 .section{
   padding:40px 0;
-  animation:fadeIn 1s forwards;
 }
 
 /* GAMES */
@@ -140,18 +155,19 @@ header{
   margin-top:20px;
 }
 
-/* CARD */
+/* 🔥 CARD GLOW EFFECT */
 .card{
   width:220px;
   background:#0f172a;
   padding:12px;
   border-radius:12px;
-  transition:0.4s;
   cursor:pointer;
   position:relative;
   overflow:hidden;
+  transition:0.4s;
 }
 
+/* LIGHT SWEEP */
 .card::before{
   content:"";
   position:absolute;
@@ -159,26 +175,31 @@ header{
   left:-100%;
   width:100%;
   height:100%;
-  background:linear-gradient(120deg, transparent, rgba(255,0,255,0.4), transparent);
-  transition:0.5s;
+  background:linear-gradient(120deg, transparent, rgba(255,0,255,0.6), transparent);
+  transition:0.6s;
 }
 
 .card:hover::before{
   left:100%;
 }
 
+/* STRONG GLOW */
 .card:hover{
   transform:translateY(-10px) scale(1.05);
-  box-shadow:0 0 25px #ff00ff;
+  box-shadow:
+    0 0 15px #ff00ff,
+    0 0 30px rgba(255,0,255,0.7),
+    0 0 60px rgba(255,0,255,0.4);
 }
 
 .card img{
   width:100%;
   border-radius:10px;
+  transition:0.3s;
 }
 
-.card h3{
-  font-size:14px;
+.card:hover img{
+  transform:scale(1.05);
 }
 
 .card p{
@@ -186,42 +207,11 @@ header{
   color:#aaa;
 }
 
-.card button{
-  margin-top:5px;
-  background:#ff00ff;
-  border:none;
-  padding:6px 10px;
-  border-radius:6px;
-  color:white;
-}
-
 /* LIVE */
 #liveVideo{
   margin-top:15px;
   background:#000;
   padding:10px;
-  border-radius:10px;
-}
-
-/* FADE ANIMATION */
-@keyframes fadeIn{
-  from{
-    opacity:0;
-    transform:translateY(20px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-
-/* SCROLLBAR */
-::-webkit-scrollbar{
-  height:6px;
-}
-
-::-webkit-scrollbar-thumb{
-  background:#ff00ff;
   border-radius:10px;
 }
 
@@ -257,13 +247,21 @@ header{
 
 <!-- HERO -->
 <div id="home" class="hero">
+
+  <div class="slider">
+    <img src="assets/banner1.jpg" class="slide active">
+    <img src="assets/banner2.jpg" class="slide">
+    <img src="assets/banner3.jpg" class="slide">
+  </div>
+
   <div class="container">
     <div class="hero-box">
       <h1>PLAY GAMES.<br><span>HAVE FUN.</span></h1>
       <p>The best place to play free online games!</p>
-      <button class="btn">🎮 EXPLORE</button>
+      <button class="btn" onclick="scrollToGames()">🎮 EXPLORE</button>
     </div>
   </div>
+
 </div>
 
 <!-- GAMES -->
@@ -275,19 +273,19 @@ header{
 
       <div class="card">
         <img src="assets/mines.jpg">
-        <h3>MINES</h3>
+        <p>MINES</p>
         <button onclick="playGame('Mines','https://plutomarsgames.github.io/plutomarsgames01.github.io/')">▶ PLAY</button>
       </div>
 
       <div class="card">
         <img src="assets/findcoins.jpg">
-        <h3>FIND COINS</h3>
+        <p>FIND COINS</p>
         <button onclick="playGame('Find Coins','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">▶ PLAY</button>
       </div>
 
       <div class="card">
         <img src="assets/carracing.jpg">
-        <h3>CAR RACING</h3>
+        <p>CAR RACING</p>
         <button onclick="playGame('Car Racing','https://plutomarsgames.github.io/plutomarsgames03.github.io/')">▶ PLAY</button>
       </div>
 
@@ -302,7 +300,7 @@ header{
 
     <div id="liveVideo">Loading live...</div>
 
-    <h2 style="margin-top:20px;">LATEST VIDEOS</h2>
+    <h2 style="margin-top:20px;"> LATEST VIDEOS</h2>
     <div id="videoList" class="games-row"></div>
   </div>
 </div>
@@ -310,6 +308,23 @@ header{
 <script>
 const API_KEY = "AIzaSyA_4LCieXQLzVHX7APxfr5_b6MtbgmPHjA";
 const CHANNEL_ID = "UCdO65ekLVmHT48V-kJFE_Fg";
+
+/* SLIDER */
+let slides = document.querySelectorAll(".slide");
+let index = 0;
+
+setInterval(()=>{
+  slides[index].classList.remove("active");
+  index = (index + 1) % slides.length;
+  slides[index].classList.add("active");
+},3000);
+
+/* EXPLORE */
+function scrollToGames(){
+  document.getElementById("games").scrollIntoView({
+    behavior:"smooth"
+  });
+}
 
 /* LIVE */
 async function loadLive(){
@@ -319,13 +334,13 @@ async function loadLive(){
 
     if(data.items && data.items.length > 0){
       let id = data.items[0].id.videoId;
-      document.getElementById("liveVideo").innerHTML =
+      liveVideo.innerHTML =
       `<iframe width="100%" height="300" src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
     } else {
-      document.getElementById("liveVideo").innerHTML = "<p>No live stream now</p>";
+      liveVideo.innerHTML = "No live stream now";
     }
   }catch{
-    document.getElementById("liveVideo").innerHTML = "<p>Live unavailable</p>";
+    liveVideo.innerHTML = "Live unavailable";
   }
 }
 
@@ -344,26 +359,19 @@ async function loadVideos(){
       </div>`;
     });
 
-    document.getElementById("videoList").innerHTML = html;
+    videoList.innerHTML = html;
   }catch{
-    document.getElementById("videoList").innerHTML = "<p>Videos not loading</p>";
+    videoList.innerHTML = "Videos not loading";
   }
 }
 
-/* AUTO LOAD */
 loadLive();
 loadVideos();
-
-/* AUTO REFRESH */
-setInterval(()=>{
-  loadLive();
-  loadVideos();
-},30000);
 
 /* PLAY GAME */
 function playGame(name,url){
   if(window.innerWidth < 768){
-    window.open(url, "_self");
+    window.open(url,"_self");
   }else{
     window.location.href="play.html?name="+name+"&url="+url;
   }
