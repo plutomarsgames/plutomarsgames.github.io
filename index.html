@@ -12,8 +12,6 @@ body{
   color:white;
 }
 
-html{scroll-behavior:smooth;}
-
 .container{
   width:95%;
   max-width:1300px;
@@ -37,6 +35,7 @@ header{
   filter: drop-shadow(0 0 10px #ff00ff);
 }
 
+/* NAV */
 .nav{
   display:flex;
   gap:30px;
@@ -46,34 +45,16 @@ header{
   color:#aaa;
   text-decoration:none;
   font-weight:bold;
-  position:relative;
 }
 
 .nav a:hover{
   color:#ff00ff;
 }
 
-.nav a::after{
-  content:"";
-  position:absolute;
-  width:0;
-  height:2px;
-  background:#ff00ff;
-  left:0;
-  bottom:-4px;
-  transition:0.3s;
-}
-
-.nav a:hover::after{
-  width:100%;
-}
-
-.live{color:red;}
-
 /* HERO */
 .hero{
   position:relative;
-  height:65vh;
+  height:60vh;
   display:flex;
   align-items:center;
   overflow:hidden;
@@ -81,12 +62,8 @@ header{
 
 .slider{
   position:absolute;
-  width:110%;
-  height:110%;
-  top:-5%;
-  left:-5%;
-  z-index:0;
-  transition:0.2s;
+  width:100%;
+  height:100%;
 }
 
 .slide{
@@ -95,7 +72,7 @@ header{
   height:100%;
   object-fit:cover;
   opacity:0;
-  transition:opacity 1s ease-in-out;
+  transition:1s;
 }
 
 .slide.active{opacity:1;}
@@ -106,72 +83,62 @@ header{
   width:100%;
   height:100%;
   background:linear-gradient(to right, rgba(0,0,0,0.8), transparent);
-  z-index:1;
 }
 
 .hero-box{
   position:relative;
   z-index:2;
-  background:rgba(0,0,0,0.4);
-  backdrop-filter: blur(10px);
+  background:rgba(0,0,0,0.5);
   padding:30px;
-  border-radius:12px;
-  max-width:500px;
-}
-
-.hero h1{
-  font-size:42px;
+  border-radius:10px;
 }
 
 .glow-text{
   color:#ff00ff;
-  animation:glow 2s infinite alternate;
-}
-
-@keyframes glow{
-  from{ text-shadow:0 0 10px #ff00ff; }
-  to{ text-shadow:0 0 30px #ff00ff; }
-}
-
-.btn{
-  margin-top:10px;
-  background:#ff00ff;
-  border:none;
-  padding:12px 20px;
-  border-radius:8px;
-  color:white;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.btn:hover{
-  transform:scale(1.1);
-  box-shadow:0 0 20px #ff00ff;
+  text-shadow:0 0 20px #ff00ff;
 }
 
 /* SECTION */
-.section{padding:40px 0;}
+.section{
+  padding:40px 0;
+}
 
 /* GAMES */
 .games-row{
   display:flex;
+  gap:20px;
   flex-wrap:wrap;
-  gap:25px;
-  margin-top:20px;
 }
 
-/* GLOW CARD */
+/* 🔥 ORIGINAL STYLE RESTORED */
 .card{
   width:220px;
   background:#0f172a;
   padding:12px;
-  border-radius:12px;
-  cursor:pointer;
+  border-radius:14px;
   position:relative;
   overflow:hidden;
   transition:0.4s;
 }
 
+/* SIDE GLOW BORDER */
+.card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:14px;
+  padding:2px;
+  background:linear-gradient(45deg,#ff00ff,#7a00ff,#ff00ff);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  opacity:0;
+  transition:0.4s;
+}
+
+/* LIGHT SWEEP */
 .card::before{
   content:"";
   position:absolute;
@@ -179,47 +146,74 @@ header{
   left:-100%;
   width:100%;
   height:100%;
-  background:linear-gradient(120deg, transparent, rgba(255,0,255,0.6), transparent);
+  background:linear-gradient(120deg, transparent, rgba(255,0,255,0.5), transparent);
   transition:0.6s;
 }
 
-.card:hover::before{left:100%;}
+/* HOVER EFFECT */
+.card:hover::before{
+  left:100%;
+}
+
+.card:hover::after{
+  opacity:1;
+}
 
 .card:hover{
   transform:translateY(-10px) scale(1.05);
-  box-shadow:0 0 20px #ff00ff,0 0 40px rgba(255,0,255,0.5);
+  box-shadow:
+    0 0 20px #ff00ff,
+    0 0 40px rgba(255,0,255,0.6),
+    0 0 70px rgba(255,0,255,0.3);
 }
 
+/* IMAGE */
 .card img{
   width:100%;
   border-radius:10px;
   transition:0.3s;
 }
 
-.card:hover img{transform:scale(1.05);}
-
-.card p{
-  font-size:12px;
-  color:#aaa;
+.card:hover img{
+  transform:scale(1.08);
 }
 
-/* LIVE */
-#liveVideo{
-  margin-top:15px;
-  background:#000;
-  padding:10px;
-  border-radius:10px;
+/* TEXT */
+.card p{
+  margin-top:8px;
+  font-weight:bold;
+}
+
+/* BUTTON */
+.play-btn{
+  margin-top:10px;
+  width:100%;
+  padding:8px;
+  border:none;
+  border-radius:8px;
+  background:linear-gradient(45deg,#ff00ff,#ff4dff);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.play-btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 15px #ff00ff;
+}
+
+/* ABOUT */
+.about-box{
+  background:#0f172a;
+  padding:20px;
+  border-radius:12px;
+  color:#ccc;
 }
 
 /* MOBILE */
-@media(max-width:768px){
-  .hero{height:55vh;}
-  .hero h1{font-size:28px;}
-}
-
-@media(max-width:480px){
+@media(max-width:600px){
   .hero{height:50vh;}
-  .hero h1{font-size:22px;}
   .games-row{overflow-x:auto;flex-wrap:nowrap;}
   .card{min-width:160px;}
 }
@@ -229,24 +223,21 @@ header{
 <body>
 
 <header>
-  <div class="container header-inner">
-
-    <div class="logo">
-      <img src="assets/logo.png">
-    </div>
-
-    <div class="nav">
-      <a href="#home">HOME</a>
-      <a href="#games">GAMES</a>
-      <a href="#live" class="live">● LIVE</a>
-    </div>
-
+<div class="container header-inner">
+  <div class="logo">
+    <img src="assets/logo.png">
   </div>
+
+  <div class="nav">
+    <a href="#home">HOME</a>
+    <a href="#games">GAMES</a>
+    <a href="#about">ABOUT</a>
+  </div>
+</div>
 </header>
 
 <!-- HERO -->
 <div id="home" class="hero">
-
   <div class="slider">
     <img src="assets/banner1.jpg" class="slide active">
     <img src="assets/banner2.jpg" class="slide">
@@ -255,138 +246,69 @@ header{
 
   <div class="container">
     <div class="hero-box">
-      <h1>
-        PLAY GAMES.<br>
-        <span class="glow-text">HAVE FUN.</span>
-      </h1>
-      <p>The best place to play free online games!</p>
-      <button class="btn" onclick="scrollToGames()">🎮 EXPLORE</button>
+      <h1>PLAY GAMES.<br><span class="glow-text">HAVE FUN.</span></h1>
+      <button class="play-btn" onclick="scrollToGames()">🎮 EXPLORE</button>
     </div>
   </div>
-
 </div>
 
 <!-- GAMES -->
 <div id="games" class="section">
-  <div class="container">
-    <h2>🎮 FEATURED GAMES</h2>
+<div class="container">
+<h2> FEATURED GAMES</h2>
 
-    <div class="games-row">
+<div class="games-row">
 
-      <div class="card">
-        <img src="assets/mines.jpg">
-        <p>MINES</p>
-        <button onclick="playGame('Mines','https://plutomarsgames.github.io/plutomarsgames01.github.io/')">▶ PLAY</button>
-      </div>
-
-      <div class="card">
-        <img src="assets/findcoins.jpg">
-        <p>FIND COINS</p>
-        <button onclick="playGame('Find Coins','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">▶ PLAY</button>
-      </div>
-
-      <div class="card">
-        <img src="assets/carracing.jpg">
-        <p>CAR RACING</p>
-        <button onclick="playGame('Car Racing','https://plutomarsgames.github.io/plutomarsgames03.github.io/')">▶ PLAY</button>
-      </div>
-
-    </div>
-  </div>
+<div class="card">
+<img src="assets/mines.jpg">
+<p>MINES</p>
+<button class="play-btn" onclick="playGame('Mines','https://plutomarsgames.github.io/plutomarsgames01.github.io/')">▶ PLAY NOW</button>
 </div>
 
-<!-- LIVE -->
-<div id="live" class="section">
-  <div class="container">
-    <h2>🔴 LIVE STREAM</h2>
+<div class="card">
+<img src="assets/findcoins.jpg">
+<p>FIND COINS</p>
+<button class="play-btn" onclick="playGame('Find Coins','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">▶ PLAY NOW</button>
+</div>
 
-    <div id="liveVideo">Loading live...</div>
+<div class="card">
+<img src="assets/carracing.jpg">
+<p>CAR RACING</p>
+<button class="play-btn" onclick="playGame('Car Racing','https://plutomarsgames.github.io/plutomarsgames03.github.io/')">▶ PLAY NOW</button>
+</div>
 
-    <h2 style="margin-top:20px;">📺 LATEST VIDEOS</h2>
-    <div id="videoList" class="games-row"></div>
-  </div>
+</div>
+</div>
+</div>
+
+<!-- ABOUT -->
+<div id="about" class="section">
+<div class="container">
+<h2>ABOUT</h2>
+
+<div class="about-box">
+Plutomars Games is a modern online gaming platform focused on delivering smooth, fast, and fun browser-based games. Our mission is to create an immersive gaming experience where players can instantly access and enjoy games without downloads. We continuously improve performance, design, and gameplay to provide a seamless experience across both desktop and mobile devices.
+</div>
+
+</div>
 </div>
 
 <script>
-const API_KEY = "AIzaSyA_4LCieXQLzVHX7APxfr5_b6MtbgmPHjA";
-const CHANNEL_ID = "UCdO65ekLVmHT48V-kJFE_Fg";
-
-/* SLIDER */
-let slides = document.querySelectorAll(".slide");
-let index = 0;
+let slides=document.querySelectorAll(".slide");
+let i=0;
 
 setInterval(()=>{
-  slides[index].classList.remove("active");
-  index = (index + 1) % slides.length;
-  slides[index].classList.add("active");
-},4000);
+  slides[i].classList.remove("active");
+  i=(i+1)%slides.length;
+  slides[i].classList.add("active");
+},3000);
 
-/* PARALLAX */
-document.addEventListener("mousemove", e=>{
-  let x = (e.clientX / window.innerWidth - 0.5) * 10;
-  let y = (e.clientY / window.innerHeight - 0.5) * 10;
-  document.querySelector(".slider").style.transform =
-    `translate(${x}px,${y}px)`;
-});
-
-/* EXPLORE */
 function scrollToGames(){
   document.getElementById("games").scrollIntoView({behavior:"smooth"});
 }
 
-/* LIVE */
-async function loadLive(){
-  try{
-    let res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&eventType=live&type=video&key=${API_KEY}`);
-    let data = await res.json();
-
-    if(data.items && data.items.length > 0){
-      let id = data.items[0].id.videoId;
-      liveVideo.innerHTML =
-      `<iframe width="100%" height="300" src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
-    } else {
-      liveVideo.innerHTML = "No live stream now";
-    }
-  }catch{
-    liveVideo.innerHTML = "Live unavailable";
-  }
-}
-
-/* VIDEOS */
-async function loadVideos(){
-  try{
-    let res = await fetch(
-      `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&maxResults=6&type=video&order=date&key=${API_KEY}`
-    );
-
-    let data = await res.json();
-
-    console.log(data); // DEBUG
-
-    let html="";
-
-    if(data.items && data.items.length > 0){
-      data.items.forEach(v=>{
-        html+=`
-        <div class="card" onclick="window.open('https://youtube.com/watch?v=${v.id.videoId}','_blank')">
-          <img src="${v.snippet.thumbnails.high.url}">
-          <p>${v.snippet.title}</p>
-        </div>`;
-      });
-    }else{
-      html = "<p>No videos found</p>";
-    }
-
-    document.getElementById("videoList").innerHTML = html;
-
-  }catch(e){
-    console.error(e);
-    document.getElementById("videoList").innerHTML = "Error loading videos";
-  }
-}
-/* PLAY GAME */
 function playGame(name,url){
-  if(window.innerWidth < 768){
+  if(window.innerWidth<768){
     window.open(url,"_self");
   }else{
     window.location.href="play.html?name="+name+"&url="+url;
