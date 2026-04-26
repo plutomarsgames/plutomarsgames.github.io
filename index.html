@@ -96,16 +96,21 @@ header{
 /* SMALL EXPLORE */
 .explore-btn{
   margin-top:10px;
-  padding:6px 12px;
-  font-size:12px;
+  width:25%;          /* 👈 makes it 25% */
+  min-width:120px;    /* 👈 prevents too small on mobile */
+  padding:8px;
   border:none;
-  border-radius:6px;
+  border-radius:8px;
   background:linear-gradient(45deg,#ff00ff,#ff4dff);
   color:white;
   font-weight:bold;
   cursor:pointer;
+  transition:0.3s;
 }
 
+.explore-btn:hover{
+  box-shadow:0 0 12px #ff00ff;
+}
 /* SECTION */
 .section{padding:40px 0;}
 
