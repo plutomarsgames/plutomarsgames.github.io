@@ -35,7 +35,6 @@ header{
   filter: drop-shadow(0 0 10px #ff00ff);
 }
 
-/* NAV */
 .nav{
   display:flex;
   gap:30px;
@@ -62,8 +61,11 @@ header{
 
 .slider{
   position:absolute;
-  width:100%;
-  height:100%;
+  width:110%;
+  height:110%;
+  top:-5%;
+  left:-5%;
+  transition:0.2s;
 }
 
 .slide{
@@ -98,6 +100,25 @@ header{
   text-shadow:0 0 20px #ff00ff;
 }
 
+/* SMALL EXPLORE BUTTON */
+.explore-btn{
+  margin-top:10px;
+  padding:6px 12px;
+  font-size:12px;
+  border:none;
+  border-radius:6px;
+  background:linear-gradient(45deg,#ff00ff,#ff4dff);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.explore-btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 10px #ff00ff;
+}
+
 /* SECTION */
 .section{
   padding:40px 0;
@@ -110,7 +131,7 @@ header{
   flex-wrap:wrap;
 }
 
-/* 🔥 ORIGINAL STYLE RESTORED */
+/* 🔥 ORIGINAL GLOW CARDS */
 .card{
   width:220px;
   background:#0f172a;
@@ -121,7 +142,6 @@ header{
   transition:0.4s;
 }
 
-/* SIDE GLOW BORDER */
 .card::after{
   content:"";
   position:absolute;
@@ -138,7 +158,6 @@ header{
   transition:0.4s;
 }
 
-/* LIGHT SWEEP */
 .card::before{
   content:"";
   position:absolute;
@@ -150,14 +169,8 @@ header{
   transition:0.6s;
 }
 
-/* HOVER EFFECT */
-.card:hover::before{
-  left:100%;
-}
-
-.card:hover::after{
-  opacity:1;
-}
+.card:hover::before{left:100%;}
+.card:hover::after{opacity:1;}
 
 .card:hover{
   transform:translateY(-10px) scale(1.05);
@@ -167,7 +180,6 @@ header{
     0 0 70px rgba(255,0,255,0.3);
 }
 
-/* IMAGE */
 .card img{
   width:100%;
   border-radius:10px;
@@ -176,12 +188,6 @@ header{
 
 .card:hover img{
   transform:scale(1.08);
-}
-
-/* TEXT */
-.card p{
-  margin-top:8px;
-  font-weight:bold;
 }
 
 /* BUTTON */
@@ -195,11 +201,9 @@ header{
   color:white;
   font-weight:bold;
   cursor:pointer;
-  transition:0.3s;
 }
 
 .play-btn:hover{
-  transform:scale(1.05);
   box-shadow:0 0 15px #ff00ff;
 }
 
@@ -209,6 +213,7 @@ header{
   padding:20px;
   border-radius:12px;
   color:#ccc;
+  line-height:1.6;
 }
 
 /* MOBILE */
@@ -238,6 +243,7 @@ header{
 
 <!-- HERO -->
 <div id="home" class="hero">
+
   <div class="slider">
     <img src="assets/banner1.jpg" class="slide active">
     <img src="assets/banner2.jpg" class="slide">
@@ -247,15 +253,16 @@ header{
   <div class="container">
     <div class="hero-box">
       <h1>PLAY GAMES.<br><span class="glow-text">HAVE FUN.</span></h1>
-      <button class="play-btn" onclick="scrollToGames()">🎮 EXPLORE</button>
+      <button class="explore-btn" onclick="scrollToGames()"> EXPLORE</button>
     </div>
   </div>
+
 </div>
 
 <!-- GAMES -->
 <div id="games" class="section">
 <div class="container">
-<h2> FEATURED GAMES</h2>
+<h2>🎮 FEATURED GAMES</h2>
 
 <div class="games-row">
 
@@ -287,13 +294,14 @@ header{
 <h2>ABOUT</h2>
 
 <div class="about-box">
-Plutomars Games is a modern online gaming platform focused on delivering smooth, fast, and fun browser-based games. Our mission is to create an immersive gaming experience where players can instantly access and enjoy games without downloads. We continuously improve performance, design, and gameplay to provide a seamless experience across both desktop and mobile devices.
+Plutomars Games is a modern online gaming platform designed to deliver fast, smooth, and engaging browser-based games. Our goal is to provide instant play experiences without downloads, ensuring accessibility across desktop and mobile devices. We focus on performance, design, and continuous improvement to create a fun and immersive gaming environment for everyone.
 </div>
 
 </div>
 </div>
 
 <script>
+/* SLIDER */
 let slides=document.querySelectorAll(".slide");
 let i=0;
 
@@ -303,10 +311,21 @@ setInterval(()=>{
   slides[i].classList.add("active");
 },3000);
 
+/* GYRO / PARALLAX EFFECT */
+document.addEventListener("mousemove", e=>{
+  let x=(e.clientX/window.innerWidth-0.5)*10;
+  let y=(e.clientY/window.innerHeight-0.5)*10;
+
+  document.querySelector(".slider").style.transform=
+    `translate(${x}px,${y}px)`;
+});
+
+/* SCROLL */
 function scrollToGames(){
   document.getElementById("games").scrollIntoView({behavior:"smooth"});
 }
 
+/* GAME */
 function playGame(name,url){
   if(window.innerWidth<768){
     window.open(url,"_self");
