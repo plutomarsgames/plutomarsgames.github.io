@@ -316,7 +316,13 @@ loadVideos();
 
 /* PLAY GAME */
 function playGame(name,url){
-  window.location.href="play.html?name="+name+"&url="+url;
+  if(window.innerWidth < 768){
+    // MOBILE → open directly
+    window.open(url, "_self");
+  }else{
+    // DESKTOP → use iframe page
+    window.location.href="play.html?name="+name+"&url="+url;
+  }
 }
 </script>
 
