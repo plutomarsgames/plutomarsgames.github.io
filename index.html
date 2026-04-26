@@ -290,13 +290,12 @@ async function loadVideos(){
 
     let html="";
     data.items.forEach(v=>{
-      html+=`
-      <div class="card">
-        <img src="${v.snippet.thumbnails.high.url}">
-        <p>${v.snippet.title}</p>
-      </div>`;
-    });
-
+  html+=`
+  <div class="card" onclick="window.open('https://youtube.com/watch?v=${v.id.videoId}','_blank')">
+    <img src="${v.snippet.thumbnails.high.url}">
+    <p>${v.snippet.title}</p>
+  </div>`;
+});
     videoList.innerHTML = html;
   }catch{
     videoList.innerHTML = "<p>Videos not loading</p>";
