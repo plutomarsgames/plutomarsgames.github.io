@@ -308,8 +308,8 @@ header{
 </div>
 
 <script>
-const API_KEY = "YOUR_API_KEY";
-const CHANNEL_ID = "YOUR_CHANNEL_ID";
+const API_KEY = "AIzaSyA_4LCieXQLzVHX7APxfr5_b6MtbgmPHjA";
+const CHANNEL_ID = "UCdO65ekLVmHT48V-kJFE_Fg";
 
 /* SLIDER */
 let slides = document.querySelectorAll(".slide");
@@ -355,27 +355,35 @@ async function loadLive(){
 /* VIDEOS */
 async function loadVideos(){
   try{
-    let res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&maxResults=6&type=video&order=date&key=${API_KEY}`);
+    let res = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&maxResults=6&type=video&order=date&key=${API_KEY}`
+    );
+
     let data = await res.json();
 
-    let html="";
-    data.items.forEach(v=>{
-      html+=`
-      <div class="card" onclick="window.open('https://youtube.com/watch?v=${v.id.videoId}','_blank')">
-        <img src="${v.snippet.thumbnails.high.url}">
-        <p>${v.snippet.title}</p>
-      </div>`;
-    });
+    console.log(data); // DEBUG
 
-    videoList.innerHTML = html;
-  }catch{
-    videoList.innerHTML = "Videos not loading";
+    let html="";
+
+    if(data.items && data.items.length > 0){
+      data.items.forEach(v=>{
+        html+=`
+        <div class="card" onclick="window.open('https://youtube.com/watch?v=${v.id.videoId}','_blank')">
+          <img src="${v.snippet.thumbnails.high.url}">
+          <p>${v.snippet.title}</p>
+        </div>`;
+      });
+    }else{
+      html = "<p>No videos found</p>";
+    }
+
+    document.getElementById("videoList").innerHTML = html;
+
+  }catch(e){
+    console.error(e);
+    document.getElementById("videoList").innerHTML = "Error loading videos";
   }
 }
-
-loadLive();
-loadVideos();
-
 /* PLAY GAME */
 function playGame(name,url){
   if(window.innerWidth < 768){
