@@ -12,7 +12,6 @@ body{
   color:white;
 }
 
-/* SMOOTH SCROLL */
 html{
   scroll-behavior:smooth;
 }
@@ -36,8 +35,10 @@ header{
   align-items:center;
 }
 
+/* LOGO */
 .logo img{
   height:65px;
+  filter: drop-shadow(0 0 10px #ff00ff);
 }
 
 /* NAV */
@@ -50,14 +51,35 @@ header{
   color:#aaa;
   text-decoration:none;
   font-weight:bold;
+  position:relative;
 }
 
 .nav a:hover{
   color:#ff00ff;
 }
 
+.nav a::after{
+  content:"";
+  position:absolute;
+  width:0;
+  height:2px;
+  background:#ff00ff;
+  left:0;
+  bottom:-4px;
+  transition:0.3s;
+}
+
+.nav a:hover::after{
+  width:100%;
+}
+
 .live{
   color:red;
+}
+
+.live::after{
+  content:" LIVE";
+  font-size:10px;
 }
 
 /* HERO */
@@ -73,6 +95,7 @@ header{
   padding:30px;
   border-radius:10px;
   max-width:500px;
+  animation:fadeIn 1s forwards;
 }
 
 .hero h1{
@@ -95,17 +118,18 @@ header{
   color:white;
   font-weight:bold;
   cursor:pointer;
+  transition:0.3s;
+}
+
+.btn:hover{
+  transform:scale(1.1);
+  box-shadow:0 0 15px #ff00ff;
 }
 
 /* SECTION */
 .section{
   padding:40px 0;
-}
-
-.section-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  animation:fadeIn 1s forwards;
 }
 
 /* GAMES */
@@ -122,13 +146,30 @@ header{
   background:#0f172a;
   padding:12px;
   border-radius:12px;
-  transition:0.3s;
+  transition:0.4s;
   cursor:pointer;
+  position:relative;
+  overflow:hidden;
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:100%;
+  height:100%;
+  background:linear-gradient(120deg, transparent, rgba(255,0,255,0.4), transparent);
+  transition:0.5s;
+}
+
+.card:hover::before{
+  left:100%;
 }
 
 .card:hover{
-  transform:translateY(-8px) scale(1.03);
-  box-shadow:0 0 20px #ff00ff;
+  transform:translateY(-10px) scale(1.05);
+  box-shadow:0 0 25px #ff00ff;
 }
 
 .card img{
@@ -152,7 +193,6 @@ header{
   padding:6px 10px;
   border-radius:6px;
   color:white;
-  cursor:pointer;
 }
 
 /* LIVE */
@@ -160,6 +200,28 @@ header{
   margin-top:15px;
   background:#000;
   padding:10px;
+  border-radius:10px;
+}
+
+/* FADE ANIMATION */
+@keyframes fadeIn{
+  from{
+    opacity:0;
+    transform:translateY(20px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{
+  height:6px;
+}
+
+::-webkit-scrollbar-thumb{
+  background:#ff00ff;
   border-radius:10px;
 }
 
@@ -207,37 +269,26 @@ header{
 <!-- GAMES -->
 <div id="games" class="section">
   <div class="container">
-    <div class="section-header">
-      <h2>🎮 FEATURED GAMES</h2>
-    </div>
+    <h2>🎮 FEATURED GAMES</h2>
 
     <div class="games-row">
 
       <div class="card">
         <img src="assets/mines.jpg">
         <h3>MINES</h3>
-        <p>Classic mind game</p>
-        <button onclick="playGame('Mines','https://plutomarsgames.github.io/plutomarsgames01.github.io/')">
-          ▶ PLAY
-        </button>
+        <button onclick="playGame('Mines','https://plutomarsgames.github.io/plutomarsgames01.github.io/')">▶ PLAY</button>
       </div>
 
       <div class="card">
         <img src="assets/findcoins.jpg">
         <h3>FIND COINS</h3>
-        <p>Collect & survive</p>
-        <button onclick="playGame('Find Coins','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">
-          ▶ PLAY
-        </button>
+        <button onclick="playGame('Find Coins','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">▶ PLAY</button>
       </div>
-      
+
       <div class="card">
         <img src="assets/carracing.jpg">
         <h3>CAR RACING</h3>
-        <p>Speed racing game</p>
-        <button onclick="playGame('Car Racing','https://plutomarsgames.github.io/plutomarsgames03.github.io/')">
-          ▶ PLAY
-        </button>
+        <button onclick="playGame('Car Racing','https://plutomarsgames.github.io/plutomarsgames03.github.io/')">▶ PLAY</button>
       </div>
 
     </div>
@@ -257,7 +308,7 @@ header{
 </div>
 
 <script>
-const API_KEY = "AIzaSyDZd_7GY24xAMqgGUzbDhTFmZZ-3DTZBv0";
+const API_KEY = "AIzaSyA_4LCieXQLzVHX7APxfr5_b6MtbgmPHjA";
 const CHANNEL_ID = "UCdO65ekLVmHT48V-kJFE_Fg";
 
 /* LIVE */
@@ -268,11 +319,8 @@ async function loadLive(){
 
     if(data.items && data.items.length > 0){
       let id = data.items[0].id.videoId;
-
       document.getElementById("liveVideo").innerHTML =
-      `<iframe width="100%" height="300"
-      src="https://www.youtube.com/embed/${id}"
-      allowfullscreen></iframe>`;
+      `<iframe width="100%" height="300" src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
     } else {
       document.getElementById("liveVideo").innerHTML = "<p>No live stream now</p>";
     }
@@ -288,18 +336,15 @@ async function loadVideos(){
     let data = await res.json();
 
     let html="";
+    data.items.forEach(v=>{
+      html+=`
+      <div class="card" onclick="window.open('https://youtube.com/watch?v=${v.id.videoId}','_blank')">
+        <img src="${v.snippet.thumbnails.high.url}">
+        <p>${v.snippet.title}</p>
+      </div>`;
+    });
 
-    if(data.items){
-      data.items.forEach(v=>{
-        html+=`
-        <div class="card" onclick="window.open('https://youtube.com/watch?v=${v.id.videoId}','_blank')">
-          <img src="${v.snippet.thumbnails.high.url}">
-          <p>${v.snippet.title}</p>
-        </div>`;
-      });
-    }
-
-    document.getElementById("videoList").innerHTML = html || "<p>No videos found</p>";
+    document.getElementById("videoList").innerHTML = html;
   }catch{
     document.getElementById("videoList").innerHTML = "<p>Videos not loading</p>";
   }
