@@ -12,6 +12,11 @@ body{
   color:white;
 }
 
+/* SMOOTH SCROLL */
+html{
+  scroll-behavior:smooth;
+}
+
 /* CONTAINER */
 .container{
   width:95%;
@@ -118,6 +123,7 @@ header{
   padding:12px;
   border-radius:12px;
   transition:0.3s;
+  cursor:pointer;
 }
 
 .card:hover{
@@ -149,7 +155,7 @@ header{
   cursor:pointer;
 }
 
-/* LIVE SECTION */
+/* LIVE */
 #liveVideo{
   margin-top:15px;
   background:#000;
@@ -159,32 +165,12 @@ header{
 
 /* MOBILE */
 @media(max-width:600px){
-
-  .logo img{
-    height:45px;
-  }
-
-  .nav{
-    gap:12px;
-    font-size:12px;
-  }
-
-  .games-row{
-    overflow-x:auto;
-    flex-wrap:nowrap;
-  }
-
-  .card{
-    min-width:160px;
-  }
-
-  .hero{
-    height:50vh;
-  }
-
-  .hero h1{
-    font-size:22px;
-  }
+  .logo img{height:45px;}
+  .nav{gap:12px;font-size:12px;}
+  .games-row{overflow-x:auto;flex-wrap:nowrap;}
+  .card{min-width:160px;}
+  .hero{height:50vh;}
+  .hero h1{font-size:22px;}
 }
 </style>
 </head>
@@ -248,12 +234,12 @@ header{
       <div class="card">
         <img src="assets/carracing.jpg">
         <h3>CAR RACING</h3>
-        <p>Collect & survive</p>
-        <button onclick="playGame('Find Coins','https://plutomarsgames.github.io/plutomarsgames03.github.io/')">
+        <p>Speed racing game</p>
+        <button onclick="playGame('Car Racing','https://plutomarsgames.github.io/plutomarsgames03.github.io/')">
           ▶ PLAY
         </button>
       </div>
-      
+
     </div>
   </div>
 </div>
@@ -263,9 +249,9 @@ header{
   <div class="container">
     <h2>🔴 LIVE STREAM</h2>
 
-    <div id="liveVideo">Live streaming loading...</div>
+    <div id="liveVideo">Loading live...</div>
 
-    <h2>Latest Videos</h2>
+    <h2 style="margin-top:20px;">📺 LATEST VIDEOS</h2>
     <div id="videoList" class="games-row"></div>
   </div>
 </div>
@@ -274,20 +260,24 @@ header{
 const API_KEY = "AIzaSyDZd_7GY24xAMqgGUzbDhTFmZZ-3DTZBv0";
 const CHANNEL_ID = "UCdO65ekLVmHT48V-kJFE_Fg";
 
-/* LIVE VIDEO */
+/* LIVE */
 async function loadLive(){
   try{
     let res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&eventType=live&type=video&key=${API_KEY}`);
     let data = await res.json();
 
-    if(data.items.length > 0){
+    if(data.items && data.items.length > 0){
       let id = data.items[0].id.videoId;
-      liveVideo.innerHTML = `<iframe width="100%" height="300" src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
-    }else{
-      liveVideo.innerHTML = "<p>No live stream now</p>";
+
+      document.getElementById("liveVideo").innerHTML =
+      `<iframe width="100%" height="300"
+      src="https://www.youtube.com/embed/${id}"
+      allowfullscreen></iframe>`;
+    } else {
+      document.getElementById("liveVideo").innerHTML = "<p>No live stream now</p>";
     }
   }catch{
-    liveVideo.innerHTML = "<p>Live unavailable</p>";
+    document.getElementById("liveVideo").innerHTML = "<p>Live unavailable</p>";
   }
 }
 
@@ -298,29 +288,38 @@ async function loadVideos(){
     let data = await res.json();
 
     let html="";
-    data.items.forEach(v=>{
-  html+=`
-  <div class="card" onclick="window.open('https://youtube.com/watch?v=${v.id.videoId}','_blank')">
-    <img src="${v.snippet.thumbnails.high.url}">
-    <p>${v.snippet.title}</p>
-  </div>`;
-});
-    videoList.innerHTML = html;
+
+    if(data.items){
+      data.items.forEach(v=>{
+        html+=`
+        <div class="card" onclick="window.open('https://youtube.com/watch?v=${v.id.videoId}','_blank')">
+          <img src="${v.snippet.thumbnails.high.url}">
+          <p>${v.snippet.title}</p>
+        </div>`;
+      });
+    }
+
+    document.getElementById("videoList").innerHTML = html || "<p>No videos found</p>";
   }catch{
-    videoList.innerHTML = "<p>Videos not loading</p>";
+    document.getElementById("videoList").innerHTML = "<p>Videos not loading</p>";
   }
 }
 
+/* AUTO LOAD */
 loadLive();
 loadVideos();
+
+/* AUTO REFRESH */
+setInterval(()=>{
+  loadLive();
+  loadVideos();
+},30000);
 
 /* PLAY GAME */
 function playGame(name,url){
   if(window.innerWidth < 768){
-    // MOBILE → open directly
     window.open(url, "_self");
   }else{
-    // DESKTOP → use iframe page
     window.location.href="play.html?name="+name+"&url="+url;
   }
 }
