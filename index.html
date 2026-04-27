@@ -4,8 +4,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Plutomars Games</title>
 
-<link rel="icon" type="image/png" href="favicon.png?v=10">
-
 <style>
 body{
   margin:0;
@@ -14,29 +12,35 @@ body{
   color:white;
 }
 
-.container{width:95%;max-width:1300px;margin:auto;}
+.container{
+  width:95%;
+  max-width:1300px;
+  margin:auto;
+}
 
 /* HEADER */
-header{background:#0a0d16;padding:10px 0;}
-.header-inner{display:flex;justify-content:space-between;align-items:center;}
-
-.logo{display:flex;align-items:center;gap:10px;}
-.logo img{height:50px;filter:drop-shadow(0 0 10px #ff00ff);}
-.logo-text{
-  font-size:22px;
-  font-weight:900;
-  letter-spacing:2px;
-  color:white;
-  text-shadow:0 0 10px #ff00ff;
+header{
+  background:#0a0d16;
+  padding:10px 0;
 }
-.logo-text b{
-  background:linear-gradient(45deg,#ff00ff,#ff4dff);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+.header-inner{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
-
-.nav{display:flex;gap:30px;}
-.nav a{color:#aaa;text-decoration:none;font-weight:bold;}
+.logo img{
+  height:65px;
+  filter: drop-shadow(0 0 10px #ff00ff);
+}
+.nav{
+  display:flex;
+  gap:30px;
+}
+.nav a{
+  color:#aaa;
+  text-decoration:none;
+  font-weight:bold;
+}
 .nav a:hover{color:#ff00ff;}
 
 /* HERO */
@@ -45,15 +49,18 @@ header{background:#0a0d16;padding:10px 0;}
   height:60vh;
   display:flex;
   align-items:center;
-  justify-content:center;
   overflow:hidden;
+  background:radial-gradient(circle at center,#0b0f1a,#020617);
 }
 
-/* ✅ FIXED BANNER FIT */
+/* 🔥 FIXED BANNER */
 .slider{
   position:absolute;
   width:100%;
   height:100%;
+  top:0;
+  left:0;
+  transition:0.2s;
 }
 
 .slide{
@@ -61,18 +68,18 @@ header{background:#0a0d16;padding:10px 0;}
   width:100%;
   height:100%;
   object-fit:cover;
-  object-position:center; /* 🔥 keeps center visible */
+  object-position:center;
   opacity:0;
   transition:1s;
 }
-
 .slide.active{opacity:1;}
 
 .hero::after{
   content:"";
   position:absolute;
-  width:100%;height:100%;
-  background:linear-gradient(to right,rgba(0,0,0,0.8),transparent);
+  width:100%;
+  height:100%;
+  background:linear-gradient(to right, rgba(0,0,0,0.8), transparent);
   pointer-events:none;
 }
 
@@ -84,24 +91,32 @@ header{background:#0a0d16;padding:10px 0;}
   border-radius:10px;
 }
 
-.glow-text{color:#ff00ff;text-shadow:0 0 20px #ff00ff;}
+.glow-text{
+  color:#ff00ff;
+  text-shadow:0 0 20px #ff00ff;
+}
 
 .explore-btn{
   margin-top:10px;
-  width:25%;
-  min-width:120px;
-  padding:8px;
+  padding:6px 12px;
+  font-size:12px;
   border:none;
-  border-radius:8px;
+  border-radius:6px;
   background:linear-gradient(45deg,#ff00ff,#ff4dff);
   color:white;
   font-weight:bold;
   cursor:pointer;
 }
 
-/* GAMES */
+/* SECTION */
 .section{padding:40px 0;}
-.games-row{display:flex;gap:20px;flex-wrap:wrap;}
+
+/* GAMES */
+.games-row{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+}
 
 .card{
   width:220px;
@@ -111,6 +126,7 @@ header{background:#0a0d16;padding:10px 0;}
   position:relative;
   overflow:hidden;
   transition:0.4s;
+  z-index:1;
 }
 
 .card::after{
@@ -136,7 +152,7 @@ header{background:#0a0d16;padding:10px 0;}
   left:-100%;
   width:100%;
   height:100%;
-  background:linear-gradient(120deg,transparent,rgba(255,0,255,0.6),transparent);
+  background:linear-gradient(120deg, transparent, rgba(255,0,255,0.5), transparent);
   transition:0.6s;
 }
 
@@ -148,10 +164,13 @@ header{background:#0a0d16;padding:10px 0;}
   box-shadow:
     0 0 20px #ff00ff,
     0 0 40px rgba(255,0,255,0.6),
-    0 0 80px rgba(255,0,255,0.3);
+    0 0 70px rgba(255,0,255,0.3);
 }
 
-.card img{width:100%;border-radius:10px;}
+.card img{
+  width:100%;
+  border-radius:10px;
+}
 
 .play-btn{
   margin-top:10px;
@@ -163,6 +182,12 @@ header{background:#0a0d16;padding:10px 0;}
   color:white;
   font-weight:bold;
   cursor:pointer;
+  position:relative;
+  z-index:5;
+}
+
+.play-btn:hover{
+  box-shadow:0 0 15px #ff00ff;
 }
 
 /* ABOUT */
@@ -173,7 +198,7 @@ header{background:#0a0d16;padding:10px 0;}
   color:#ccc;
 }
 
-/* MOBILE FIX */
+/* MOBILE */
 @media(max-width:600px){
   .hero{height:50vh;}
   .games-row{overflow-x:auto;flex-wrap:nowrap;}
@@ -188,9 +213,7 @@ header{background:#0a0d16;padding:10px 0;}
 <div class="container header-inner">
   <div class="logo">
     <img src="assets/logo.png">
-    <span class="logo-text">PLUTOMARS <b>GAMES</b></span>
   </div>
-
   <div class="nav">
     <a href="#home">HOME</a>
     <a href="#games">GAMES</a>
@@ -201,18 +224,18 @@ header{background:#0a0d16;padding:10px 0;}
 
 <!-- HERO -->
 <div id="home" class="hero">
-<div class="slider">
-<img src="assets/banner1.jpg" class="slide active">
-<img src="assets/banner2.jpg" class="slide">
-<img src="assets/banner3.jpg" class="slide">
-</div>
+  <div class="slider">
+    <img src="assets/banner1.jpg" class="slide active">
+    <img src="assets/banner2.jpg" class="slide">
+    <img src="assets/banner3.jpg" class="slide">
+  </div>
 
-<div class="container">
-<div class="hero-box">
-<h1>PLAY GAMES.<br><span class="glow-text">HAVE FUN.</span></h1>
-<button class="explore-btn" onclick="scrollToGames()">🎮 EXPLORE</button>
-</div>
-</div>
+  <div class="container">
+    <div class="hero-box">
+      <h1>PLAY GAMES.<br><span class="glow-text">HAVE FUN.</span></h1>
+      <button class="explore-btn" onclick="scrollToGames()">🎮 EXPLORE</button>
+    </div>
+  </div>
 </div>
 
 <!-- GAMES -->
@@ -225,19 +248,28 @@ header{background:#0a0d16;padding:10px 0;}
 <div class="card">
 <img src="assets/mines.jpg">
 <p>MINES</p>
-<button class="play-btn" onclick="window.open('https://plutomarsgames.github.io/plutomarsgames01.github.io/','_self')">▶ PLAY NOW</button>
+<button class="play-btn"
+onclick="event.stopPropagation(); openGame('Mines','https://plutomarsgames.github.io/plutomarsgames01.github.io/')">
+▶ PLAY NOW
+</button>
 </div>
 
 <div class="card">
 <img src="assets/findcoins.jpg">
 <p>FIND COINS</p>
-<button class="play-btn" onclick="window.open('https://plutomarsgames.github.io/plutomarsgames02.github.io/','_self')">▶ PLAY NOW</button>
+<button class="play-btn"
+onclick="event.stopPropagation(); openGame('Find Coins','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">
+▶ PLAY NOW
+</button>
 </div>
 
 <div class="card">
 <img src="assets/carracing.jpg">
 <p>CAR RACING</p>
-<button class="play-btn" onclick="window.open('https://plutomarsgames.github.io/plutomarsgames03.github.io/','_self')">▶ PLAY NOW</button>
+<button class="play-btn"
+onclick="event.stopPropagation(); openGame('Car Racing','https://plutomarsgames.github.io/plutomarsgames03.github.io/')">
+▶ PLAY NOW
+</button>
 </div>
 
 </div>
@@ -249,7 +281,7 @@ header{background:#0a0d16;padding:10px 0;}
 <div class="container">
 <h2>ABOUT</h2>
 <div class="about-box">
-Plutomars Games is a modern browser gaming platform offering instant play without downloads.
+Plutomars Games is a fast and modern browser gaming platform designed for instant play.
 </div>
 </div>
 </div>
@@ -264,24 +296,20 @@ setInterval(()=>{
   slides[i].classList.add("active");
 },3000);
 
-/* DESKTOP */
 document.addEventListener("mousemove", e=>{
   let x=(e.clientX/window.innerWidth-0.5)*10;
   let y=(e.clientY/window.innerHeight-0.5)*10;
   document.querySelector(".slider").style.transform=`translate(${x}px,${y}px)`;
 });
 
-/* MOBILE GYRO */
-if (window.DeviceOrientationEvent) {
-  window.addEventListener("deviceorientation", function(event){
-    let x = (event.gamma / 45) * 10;
-    let y = (event.beta / 45) * 10;
-    document.querySelector(".slider").style.transform=`translate(${x}px,${y}px)`;
-  });
-}
-
 function scrollToGames(){
   document.getElementById("games").scrollIntoView({behavior:"smooth"});
+}
+
+/* 🔥 UPDATED FUNCTION */
+function openGame(name,url){
+  window.location.href =
+    "play.html?name="+encodeURIComponent(name)+"&url="+encodeURIComponent(url);
 }
 </script>
 
