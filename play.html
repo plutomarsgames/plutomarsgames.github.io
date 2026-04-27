@@ -57,15 +57,23 @@ const params = new URLSearchParams(window.location.search);
 const name = params.get("name");
 const url = params.get("url");
 
-// set title
-document.getElementById("gameTitle").innerText = name;
+// set title safely
+document.getElementById("gameTitle").innerText = name || "Game";
 
-// load game
-document.getElementById("gameFrame").src = url;
+// load game safely
+if(url){
+  document.getElementById("gameFrame").src = url;
+}else{
+  document.getElementById("gameTitle").innerText = "Game not found";
+}
 
-// back button
+// fixed back button
 function goBack(){
-  window.history.back();
+  if(document.referrer){
+    window.history.back();
+  }else{
+    window.location.href = "index.html";
+  }
 }
 </script>
 
