@@ -4,9 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Plutomars Games</title>
 
-<!-- ✅ FAVICON FIX -->
 <link rel="icon" type="image/png" href="favicon.png?v=10">
-<link rel="shortcut icon" href="favicon.png?v=10">
 
 <style>
 body{
@@ -42,9 +40,32 @@ header{background:#0a0d16;padding:10px 0;}
 .nav a:hover{color:#ff00ff;}
 
 /* HERO */
-.hero{position:relative;height:60vh;display:flex;align-items:center;overflow:hidden;}
-.slider{position:absolute;width:110%;height:110%;top:-5%;left:-5%;}
-.slide{position:absolute;width:100%;height:100%;object-fit:cover;opacity:0;transition:1s;}
+.hero{
+  position:relative;
+  height:60vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+/* ✅ FIXED BANNER FIT */
+.slider{
+  position:absolute;
+  width:100%;
+  height:100%;
+}
+
+.slide{
+  position:absolute;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center; /* 🔥 keeps center visible */
+  opacity:0;
+  transition:1s;
+}
+
 .slide.active{opacity:1;}
 
 .hero::after{
@@ -130,8 +151,7 @@ header{background:#0a0d16;padding:10px 0;}
     0 0 80px rgba(255,0,255,0.3);
 }
 
-.card img{width:100%;border-radius:10px;transition:0.4s;}
-.card:hover img{transform:scale(1.08);}
+.card img{width:100%;border-radius:10px;}
 
 .play-btn{
   margin-top:10px;
@@ -153,6 +173,7 @@ header{background:#0a0d16;padding:10px 0;}
   color:#ccc;
 }
 
+/* MOBILE FIX */
 @media(max-width:600px){
   .hero{height:50vh;}
   .games-row{overflow-x:auto;flex-wrap:nowrap;}
@@ -204,28 +225,19 @@ header{background:#0a0d16;padding:10px 0;}
 <div class="card">
 <img src="assets/mines.jpg">
 <p>MINES</p>
-<button class="play-btn"
-onclick="event.stopPropagation(); openGame('Mines','https://plutomarsgames.github.io/plutomarsgames01.github.io/')">
-▶ PLAY NOW
-</button>
+<button class="play-btn" onclick="window.open('https://plutomarsgames.github.io/plutomarsgames01.github.io/','_self')">▶ PLAY NOW</button>
 </div>
 
 <div class="card">
 <img src="assets/findcoins.jpg">
 <p>FIND COINS</p>
-<button class="play-btn"
-onclick="event.stopPropagation(); openGame('Find Coins','https://plutomarsgames.github.io/plutomarsgames02.github.io/')">
-▶ PLAY NOW
-</button>
+<button class="play-btn" onclick="window.open('https://plutomarsgames.github.io/plutomarsgames02.github.io/','_self')">▶ PLAY NOW</button>
 </div>
 
 <div class="card">
 <img src="assets/carracing.jpg">
 <p>CAR RACING</p>
-<button class="play-btn"
-onclick="event.stopPropagation(); openGame('Car Racing','https://plutomarsgames.github.io/plutomarsgames03.github.io/')">
-▶ PLAY NOW
-</button>
+<button class="play-btn" onclick="window.open('https://plutomarsgames.github.io/plutomarsgames03.github.io/','_self')">▶ PLAY NOW</button>
 </div>
 
 </div>
@@ -243,7 +255,6 @@ Plutomars Games is a modern browser gaming platform offering instant play withou
 </div>
 
 <script>
-// SLIDER
 let slides=document.querySelectorAll(".slide");
 let i=0;
 
@@ -253,14 +264,14 @@ setInterval(()=>{
   slides[i].classList.add("active");
 },3000);
 
-// DESKTOP PARALLAX
+/* DESKTOP */
 document.addEventListener("mousemove", e=>{
   let x=(e.clientX/window.innerWidth-0.5)*10;
   let y=(e.clientY/window.innerHeight-0.5)*10;
   document.querySelector(".slider").style.transform=`translate(${x}px,${y}px)`;
 });
 
-// MOBILE GYRO
+/* MOBILE GYRO */
 if (window.DeviceOrientationEvent) {
   window.addEventListener("deviceorientation", function(event){
     let x = (event.gamma / 45) * 10;
@@ -269,14 +280,8 @@ if (window.DeviceOrientationEvent) {
   });
 }
 
-// SCROLL
 function scrollToGames(){
   document.getElementById("games").scrollIntoView({behavior:"smooth"});
-}
-
-// ✅ PLAY FIX
-function openGame(name,url){
-  window.location.href = "play.html?name="+encodeURIComponent(name)+"&url="+encodeURIComponent(url);
 }
 </script>
 
