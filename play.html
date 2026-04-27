@@ -1,35 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Play Game</title>
-  <style>
-    body {
-      margin:0;
-      background:black;
-      color:white;
-      text-align:center;
-    }
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Play Game</title>
 
-    iframe {
-      width:100%;
-      height:100vh;
-      border:none;
-    }
-  </style>
+<style>
+body{margin:0;background:#020617;color:white;font-family:Arial;}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  padding:10px;
+  background:#0a0d16;
+}
+
+.back-btn{
+  background:#ff00ff;
+  border:none;
+  padding:6px 12px;
+  border-radius:6px;
+  color:white;
+  cursor:pointer;
+}
+
+iframe{
+  width:100%;
+  height:calc(100vh - 50px);
+  border:none;
+}
+</style>
 </head>
 
 <body>
 
-<h2 id="title"></h2>
+<div class="topbar">
+<button class="back-btn" onclick="goBack()">⬅ BACK</button>
+<span id="gameName">Game</span>
+</div>
+
 <iframe id="gameFrame"></iframe>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const name = params.get("name");
-const url = params.get("url");
+const p=new URLSearchParams(location.search);
+document.getElementById("gameFrame").src=p.get("url");
+document.getElementById("gameName").innerText=p.get("name");
 
-document.getElementById("title").innerText = name;
-document.getElementById("gameFrame").src = url;
+function goBack(){
+  window.location.href="index.html";
+}
 </script>
 
 </body>
