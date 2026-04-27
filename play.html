@@ -1,14 +1,73 @@
-<button class="play-btn"
-onclick="openGame('MINES','https://plutomarsgames.github.io/plutomarsgames01/')">
-▶ PLAY NOW
-</button>
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Play Game</title>
 
-<button class="play-btn"
-onclick="openGame('FIND COINS','https://plutomarsgames.github.io/plutomarsgames02/')">
-▶ PLAY NOW
-</button>
+<style>
+body{
+  margin:0;
+  background:#020617;
+  color:white;
+  font-family:Arial;
+}
 
-<button class="play-btn"
-onclick="openGame('CAR RACING','https://plutomarsgames.github.io/plutomarsgames03/')">
-▶ PLAY NOW
-</button>
+header{
+  background:#0a0d16;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.title{
+  font-weight:bold;
+  font-size:18px;
+}
+
+.back-btn{
+  background:#ff00ff;
+  border:none;
+  padding:6px 12px;
+  border-radius:6px;
+  color:white;
+  cursor:pointer;
+}
+
+iframe{
+  width:100%;
+  height:calc(100vh - 50px);
+  border:none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="title" id="gameTitle">Loading...</div>
+  <button class="back-btn" onclick="goBack()">⬅ BACK</button>
+</header>
+
+<iframe id="gameFrame"></iframe>
+
+<script>
+// get URL params
+const params = new URLSearchParams(window.location.search);
+const name = params.get("name");
+const url = params.get("url");
+
+// set title
+document.getElementById("gameTitle").innerText = name;
+
+// load game
+document.getElementById("gameFrame").src = url;
+
+// back button
+function goBack(){
+  window.history.back();
+}
+</script>
+
+</body>
+</html>
