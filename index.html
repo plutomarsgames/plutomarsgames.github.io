@@ -28,10 +28,30 @@ header{
   justify-content:space-between;
   align-items:center;
 }
+
+/* LOGO + TEXT */
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
 .logo img{
   height:65px;
   filter: drop-shadow(0 0 10px #ff00ff);
 }
+.logo-text{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:2px;
+  color:white;
+  text-shadow:0 0 10px #ff00ff;
+}
+.logo-text b{
+  background:linear-gradient(45deg,#ff00ff,#ff4dff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
 .nav{
   display:flex;
   gap:30px;
@@ -53,7 +73,7 @@ header{
   background:radial-gradient(circle at center,#0b0f1a,#020617);
 }
 
-/* 🔥 FIXED BANNER */
+/* FIXED BANNER */
 .slider{
   position:absolute;
   width:100%;
@@ -62,7 +82,6 @@ header{
   left:0;
   transition:0.2s;
 }
-
 .slide{
   position:absolute;
   width:100%;
@@ -213,7 +232,9 @@ header{
 <div class="container header-inner">
   <div class="logo">
     <img src="assets/logo.png">
+    <span class="logo-text">PLUTOMARS <b>GAMES</b></span>
   </div>
+
   <div class="nav">
     <a href="#home">HOME</a>
     <a href="#games">GAMES</a>
@@ -306,7 +327,7 @@ function scrollToGames(){
   document.getElementById("games").scrollIntoView({behavior:"smooth"});
 }
 
-/* 🔥 UPDATED FUNCTION */
+/* GAME PAGE NAVIGATION */
 function openGame(name,url){
   window.location.href =
     "play.html?name="+encodeURIComponent(name)+"&url="+encodeURIComponent(url);
