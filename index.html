@@ -62,7 +62,6 @@ header{background:#0a0d16;padding:10px 0;}
 
 .glow-text{color:#ff00ff;text-shadow:0 0 20px #ff00ff;}
 
-/* EXPLORE BUTTON */
 .explore-btn{
   margin-top:10px;
   width:25%;
@@ -82,7 +81,6 @@ header{background:#0a0d16;padding:10px 0;}
 /* GAMES */
 .games-row{display:flex;gap:20px;flex-wrap:wrap;}
 
-/* 🔥 PREMIUM GLOW CARD */
 .card{
   width:220px;
   background:#0f172a;
@@ -93,7 +91,6 @@ header{background:#0a0d16;padding:10px 0;}
   transition:0.4s;
 }
 
-/* BORDER GLOW */
 .card::after{
   content:"";
   position:absolute;
@@ -110,7 +107,6 @@ header{background:#0a0d16;padding:10px 0;}
   transition:0.4s;
 }
 
-/* LIGHT SWEEP */
 .card::before{
   content:"";
   position:absolute;
@@ -136,7 +132,6 @@ header{background:#0a0d16;padding:10px 0;}
 .card img{width:100%;border-radius:10px;transition:0.4s;}
 .card:hover img{transform:scale(1.08);}
 
-/* BUTTON */
 .play-btn{
   margin-top:10px;
   width:100%;
@@ -210,25 +205,28 @@ header{background:#0a0d16;padding:10px 0;}
 <img src="assets/mines.jpg">
 <p>MINES</p>
 <button class="play-btn"
-onclick="event.stopPropagation(); window.location.href='https://plutomarsgames.github.io/plutomarsgames01.github.io/'">
+onclick="window.location.href='https://plutomarsgames.github.io/plutomarsgames01.github.io/'">
 ▶ PLAY NOW
 </button>
+</div>
 
 <div class="card">
 <img src="assets/findcoins.jpg">
 <p>FIND COINS</p>
 <button class="play-btn"
-onclick="event.stopPropagation(); window.location.href='https://plutomarsgames.github.io/plutomarsgames02.github.io/'">
+onclick="window.location.href='https://plutomarsgames.github.io/plutomarsgames02.github.io/'">
 ▶ PLAY NOW
-</button>>
+</button>
+</div>
 
 <div class="card">
 <img src="assets/carracing.jpg">
 <p>CAR RACING</p>
 <button class="play-btn"
-onclick="event.stopPropagation(); window.location.href='https://plutomarsgames.github.io/plutomarsgames03.github.io/'">
+onclick="window.location.href='https://plutomarsgames.github.io/plutomarsgames03.github.io/'">
 ▶ PLAY NOW
 </button>
+</div>
 
 </div>
 </div>
@@ -261,10 +259,6 @@ document.addEventListener("mousemove", e=>{
 
 function scrollToGames(){
   document.getElementById("games").scrollIntoView({behavior:"smooth"});
-}
-
-function openGame(name,url){
-  window.location.href="play.html?name="+encodeURIComponent(name)+"&url="+encodeURIComponent(url);
 }
 </script>
 
