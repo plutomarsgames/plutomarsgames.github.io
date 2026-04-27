@@ -12,17 +12,13 @@ body{
   font-family:Arial;
 }
 
-header{
-  background:#0a0d16;
-  padding:10px;
+/* TOP BAR */
+.topbar{
   display:flex;
   justify-content:space-between;
   align-items:center;
-}
-
-.title{
-  font-weight:bold;
-  font-size:18px;
+  padding:10px;
+  background:#0a0d16;
 }
 
 .back-btn{
@@ -34,6 +30,7 @@ header{
   cursor:pointer;
 }
 
+/* GAME FRAME */
 iframe{
   width:100%;
   height:calc(100vh - 50px);
@@ -44,36 +41,23 @@ iframe{
 
 <body>
 
-<header>
-  <div class="title" id="gameTitle">Loading...</div>
+<div class="topbar">
   <button class="back-btn" onclick="goBack()">⬅ BACK</button>
-</header>
+  <span id="gameTitle">Game</span>
+</div>
 
 <iframe id="gameFrame"></iframe>
 
 <script>
-// get URL params
-const params = new URLSearchParams(window.location.search);
-const name = params.get("name");
-const url = params.get("url");
+const p = new URLSearchParams(location.search);
+const url = p.get("url");
+const name = p.get("name");
 
-// set title safely
+document.getElementById("gameFrame").src = url;
 document.getElementById("gameTitle").innerText = name || "Game";
 
-// load game safely
-if(url){
-  document.getElementById("gameFrame").src = url;
-}else{
-  document.getElementById("gameTitle").innerText = "Game not found";
-}
-
-// fixed back button
 function goBack(){
-  if(document.referrer){
-    window.history.back();
-  }else{
-    window.location.href = "index.html";
-  }
+  window.location.href = "index.html";
 }
 </script>
 
