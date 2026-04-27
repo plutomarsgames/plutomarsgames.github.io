@@ -1,54 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Play Game</title>
+<div class="games-row">
 
-<style>
-body{margin:0;background:#020617;color:white;font-family:Arial;}
+  <!-- CARD 1 -->
+  <div class="card">
+    <img src="assets/mines.jpg">
+    <p>MINES</p>
+    <button class="play-btn"
+      onclick="window.location.href='https://plutomarsgames.github.io/plutomarsgames01.github.io/'">
+      ▶ PLAY NOW
+    </button>
+  </div>
 
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  padding:10px;
-  background:#0a0d16;
-}
+  <!-- CARD 2 -->
+  <div class="card">
+    <img src="assets/findcoins.jpg">
+    <p>FIND COINS</p>
+    <button class="play-btn"
+      onclick="window.location.href='https://plutomarsgames.github.io/plutomarsgames02.github.io/'">
+      ▶ PLAY NOW
+    </button>
+  </div>
 
-.back-btn{
-  background:#ff00ff;
-  border:none;
-  padding:6px 12px;
-  border-radius:6px;
-  color:white;
-  cursor:pointer;
-}
+  <!-- CARD 3 -->
+  <div class="card">
+    <img src="assets/carracing.jpg">
+    <p>CAR RACING</p>
+    <button class="play-btn"
+      onclick="window.location.href='https://plutomarsgames.github.io/plutomarsgames03.github.io/'">
+      ▶ PLAY NOW
+    </button>
+  </div>
 
-iframe{
-  width:100%;
-  height:calc(100vh - 50px);
-  border:none;
-}
-</style>
-</head>
-
-<body>
-
-<div class="topbar">
-<button class="back-btn" onclick="goBack()">⬅ BACK</button>
-<span id="gameName">Game</span>
 </div>
-
-<iframe id="gameFrame"></iframe>
-
-<script>
-const p=new URLSearchParams(location.search);
-document.getElementById("gameFrame").src=p.get("url");
-document.getElementById("gameName").innerText=p.get("name");
-
-function goBack(){
-  window.location.href="index.html";
-}
-</script>
-
-</body>
-</html>
